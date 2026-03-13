@@ -203,11 +203,12 @@ def logout():
     return redirect(url_for('login'))
 
 # ─── SERVE UPLOADED PAPERS ──────────────────────────────────────────────────
-@app.route('/uploads/papers/<filename>')
+@app.route('/view-paper/<filename>')
 def serve_paper(filename):
     if session.get('role') not in ('coordinator', 'guide', 'student'):
         return redirect(url_for('login'))
-    return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], 'papers'), filename)
+    papers_dir = os.path.abspath(os.path.join(app.config['UPLOAD_FOLDER'], 'papers'))
+    return send_from_directory(papers_dir, filename)
 
 # ─── ROUTES: COORDINATOR ────────────────────────────────────────────────────
 @app.route('/coordinator/dashboard')

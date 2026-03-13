@@ -222,7 +222,7 @@
             PUBLISHED PAPER ENTITLED "{{ p1.paper_title|upper }}" IN {{ p1.journal_name|upper }} VOLUME {{ p1.volume_no }}, ISSUE {{ p1.issue }}, {{ p1.timeline|upper }}, E ISSN {{ p1.e_issn }}
           </div>
           {% if p1.pdf_filename %}
-          <a href="/uploads/papers/{{ p1.pdf_filename }}" target="_blank" class="btn btn-success btn-sm" style="margin-top:10px;">📄 View PDF</a>
+          <a href="/view-paper/{{ p1.pdf_filename }}" target="_blank" class="btn btn-success btn-sm" style="margin-top:10px;">📄 View PDF</a>
           {% endif %}
         </div>
         <div style="font-size:13px;color:#888;margin-bottom:14px;">You can update your Stage 1 submission below.</div>
@@ -319,7 +319,7 @@
             PUBLISHED PAPER ENTITLED "{{ p2.paper_title|upper }}" IN {{ p2.journal_name|upper }} VOLUME {{ p2.volume_no }}, ISSUE {{ p2.issue }}, {{ p2.timeline|upper }}, E ISSN {{ p2.e_issn }}
           </div>
           {% if p2.pdf_filename %}
-          <a href="/uploads/papers/{{ p2.pdf_filename }}" target="_blank" class="btn btn-success btn-sm" style="margin-top:10px;">📄 View PDF</a>
+          <a href="/view-paper/{{ p2.pdf_filename }}" target="_blank" class="btn btn-success btn-sm" style="margin-top:10px;">📄 View PDF</a>
           {% endif %}
         </div>
         <div style="font-size:13px;color:#888;margin-bottom:14px;">You can update your Stage 2 submission below.</div>

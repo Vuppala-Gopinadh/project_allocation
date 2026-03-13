@@ -50,7 +50,7 @@
         </div>
         <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
           {% if p.pdf_filename %}
-          <a href="/uploads/papers/{{ p.pdf_filename }}" target="_blank" class="btn btn-sm" style="background:#ede9fe;color:#7c3aed;">
+          <a href="/view-paper/{{ p.pdf_filename }}" target="_blank" class="btn btn-sm" style="background:#ede9fe;color:#7c3aed;">
             📄 View PDF
           </a>
           {% else %}
@@ -116,7 +116,7 @@
         </div>
         <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
           {% if p.pdf_filename %}
-          <a href="/uploads/papers/{{ p.pdf_filename }}" target="_blank" class="btn btn-sm btn-success">
+          <a href="/view-paper/{{ p.pdf_filename }}" target="_blank" class="btn btn-sm btn-success">
             📄 View PDF
           </a>
           {% else %}

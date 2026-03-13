@@ -83,7 +83,7 @@
 
         <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;flex-shrink:0;">
           {% if p.pdf_filename %}
-          <a href="/uploads/papers/{{ p.pdf_filename }}" target="_blank"
+          <a href="/view-paper/{{ p.pdf_filename }}" target="_blank"
              class="btn btn-sm {% if p.stage==1 %}btn-coord{% else %}btn-student{% endif %}">
             📄 View PDF
           </a>
