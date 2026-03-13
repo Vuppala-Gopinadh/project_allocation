@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Paper Publications — Coordinator{% endblock %}
+{% block content %}
+<div class="page fade-in">
+  <div class="page-header">
+    <h1>📰 All Paper Publications</h1>
+    <p>Stage 1 & Stage 2 paper submissions from all student groups</p>
+  </div>
+
+  {% if not papers %}
+  <div class="card">
+    <div class="empty">
+      <div class="empty-icon">📄</div>
+      <h3>No Publications Submitted Yet</h3>
+      <p>Student groups haven't submitted any paper publications yet.</p>
+    </div>
+  </div>
+  {% else %}
+
+  <!-- Summary badges -->
+  <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+    {% set s1 = papers | selectattr('stage', 'equalto', 1) | list %}
+    {% set s2 = papers | selectattr('stage', 'equalto', 2) | list %}
+    <div class="stat-card" style="padding:14px 20px;gap:12px;">
+      <div class="stat-icon" style="width:40px;height:40px;font-size:18px;background:#ede9fe;">1️⃣</div>
+      <div><div class="stat-val" style="font-size:24px;color:#7c3aed;">{{ s1|length }}</div><div class="stat-label">Stage 1 Submissions</div></div>
+    </div>
+    <div class="stat-card" style="padding:14px 20px;gap:12px;">
+      <div class="stat-icon" style="width:40px;height:40px;font-size:18px;background:#dcfce7;">2️⃣</div>
+      <div><div class="stat-val" style="font-size:24px;color:#059669;">{{ s2|length }}</div><div class="stat-label">Stage 2 Submissions</div></div>
+    </div>
+    <div class="stat-card" style="padding:14px 20px;gap:12px;">
+      <div class="stat-icon" style="width:40px;height:40px;font-size:18px;background:#dbeafe;">📄</div>
+      <div><div class="stat-val" style="font-size:24px;color:#1d4ed8;">{{ papers|length }}</div><div class="stat-label">Total Publications</div></div>
+    </div>
+  </div>
+
+  <!-- Filter tabs -->
+  <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+    <button onclick="filterPapers('all', this)" class="filter-btn"
+      style="padding:7px 16px;border-radius:20px;border:1.5px solid #111;background:#111;color:#fff;font-size:13px;font-weight:600;cursor:pointer;">
+      All ({{ papers|length }})
+    </button>
+    <button onclick="filterPapers('1', this)"
+      style="padding:7px 16px;border-radius:20px;border:1.5px solid #eee;background:#fafaf8;color:#888;font-size:13px;font-weight:600;cursor:pointer;">
+      1️⃣ Stage 1 ({{ s1|length }})
+    </button>
+    <button onclick="filterPapers('2', this)"
+      style="padding:7px 16px;border-radius:20px;border:1.5px solid #eee;background:#fafaf8;color:#888;font-size:13px;font-weight:600;cursor:pointer;">
+      2️⃣ Stage 2 ({{ s2|length }})
+    </button>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;" id="papersList">
+    {% for p in papers %}
+    <div class="paper-card card" data-stage="{{ p.stage }}"
+         style="border-left:4px solid {% if p.stage == 1 %}#7c3aed{% else %}#059669{% endif %};">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+        <div style="flex:1;min-width:300px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+            {% if p.stage == 1 %}
+              <span class="badge badge-purple">1️⃣ Stage 1</span>
+            {% else %}
+              <span class="badge badge-green">2️⃣ Stage 2</span>
+            {% endif %}
+            {% if p.guide_name %}<span class="badge badge-blue">Guide: {{ p.guide_name }}</span>{% endif %}
+            <span style="font-size:12px;color:#aaa;">{{ p.submitted_at[:16] if p.submitted_at else '' }}</span>
+          </div>
+
+          <!-- Citation block -->
+          <div style="background:{% if p.stage==1 %}#faf5ff{% else %}#f0fdf4{% endif %};border:1.5px solid {% if p.stage==1 %}#ddd6fe{% else %}#bbf7d0{% endif %};border-radius:10px;padding:14px 16px;margin-bottom:12px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:{% if p.stage==1 %}#7c3aed{% else %}#059669{% endif %};margin-bottom:6px;">📋 Publication Citation</div>
+            <div style="font-size:14px;font-weight:700;color:{% if p.stage==1 %}#1e1b4b{% else %}#052e16{% endif %};line-height:1.9;font-style:italic;letter-spacing:0.01em;">
+              PUBLISHED PAPER ENTITLED "{{ p.paper_title|upper }}" IN {{ p.journal_name|upper }} VOLUME {{ p.volume_no }}, ISSUE {{ p.issue }}, {{ p.timeline|upper }}, E ISSN {{ p.e_issn }}
+            </div>
+          </div>
+
+          <div class="text-muted" style="font-size:13px;">
+            Group Lead: <strong>{{ p.lead_name }}</strong> ({{ p.lead_roll }})
+            {% if p.project_title %} &middot; Project: <strong>{{ p.project_title }}</strong>{% endif %}
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;flex-shrink:0;">
+          {% if p.pdf_filename %}
+          <a href="/uploads/papers/{{ p.pdf_filename }}" target="_blank"
+             class="btn btn-sm {% if p.stage==1 %}btn-coord{% else %}btn-student{% endif %}">
+            📄 View PDF
+          </a>
+          {% else %}
+          <span class="badge badge-gray">No PDF uploaded</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Detail fields -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid #f0f0ee;">
+        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+          <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Journal / Conf.</div>
+          <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.journal_name }}</div>
+        </div>
+        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+          <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Volume No</div>
+          <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.volume_no }}</div>
+        </div>
+        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+          <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Issue</div>
+          <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.issue }}</div>
+        </div>
+        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+          <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Timeline</div>
+          <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.timeline }}</div>
+        </div>
+        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+          <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">E-ISSN</div>
+          <div style="font-size:13px;font-weight:700;margin-top:2px;font-family:'DM Mono',monospace;">{{ p.e_issn }}</div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+<script>
+function filterPapers(stage, btn) {
+  document.querySelectorAll('button[onclick^="filterPapers"]').forEach(b => {
+    b.style.background = '#fafaf8'; b.style.color = '#888'; b.style.borderColor = '#eee';
+  });
+  btn.style.background = '#111'; btn.style.color = '#fff'; btn.style.borderColor = '#111';
+
+  document.querySelectorAll('.paper-card').forEach(card => {
+    card.style.display = (stage === 'all' || card.dataset.stage === stage) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

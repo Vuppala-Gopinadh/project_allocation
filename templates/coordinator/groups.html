@@ -12,14 +12,13 @@
     <div class="empty">
       <div class="empty-icon">👥</div>
       <h3>No Groups Yet</h3>
-      <p>Students will form groups from their portal. Groups will appear here once created.</p>
+      <p>Students will form groups from their portal.</p>
     </div>
   </div>
   {% else %}
 
-  <!-- Filter tabs -->
   <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
-    <button onclick="filterGroups('all', this)" class="filter-btn active-filter"
+    <button onclick="filterGroups('all', this)" class="filter-btn"
       style="padding:7px 16px;border-radius:20px;border:1.5px solid #111;background:#111;color:#fff;font-size:13px;font-weight:600;cursor:pointer;">
       All ({{ groups|length }})
     </button>
@@ -41,6 +40,7 @@
     {% for item in groups %}
     {% set grp = item.group %}
     {% set members = item.members %}
+    {% set paper_stages = item.paper_stages %}
     <div class="group-card card"
          data-finalized="{{ grp.title_finalized }}"
          data-has-title="{{ 1 if grp.project_title else 0 }}"
@@ -61,14 +61,14 @@
             {% else %}
               <span class="badge" style="background:#fee2e2;color:#dc2626;">No Guide</span>
             {% endif %}
+            {% if 1 in paper_stages %}<span class="badge badge-purple">📰 S1 Paper</span>{% endif %}
+            {% if 2 in paper_stages %}<span class="badge badge-green">📰 S2 Paper</span>{% endif %}
           </div>
 
-          <!-- Project Title -->
           <div style="font-size:18px;font-weight:800;letter-spacing:-0.02em;margin-bottom:10px;color:{% if grp.project_title %}#111{% else %}#ccc{% endif %};">
             {{ grp.project_title or 'No project title submitted' }}
           </div>
 
-          <!-- Members -->
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
             {% for m in members %}
             <span class="member-pill {% if m.prn == grp.lead_roll %}lead{% endif %}">
@@ -79,26 +79,18 @@
           <div class="text-muted">Team Lead: <strong>{{ grp.lead_name or '—' }}</strong> · {{ members|length }} members</div>
         </div>
 
-        <!-- Actions -->
         <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
-          <!-- Finalize / Un-finalize title -->
           {% if grp.project_title %}
           <form method="POST" action="/coordinator/groups/finalize-title"
-                onsubmit="return confirm('{% if grp.title_finalized %}Un-finalize this title? Students will be able to change it again.{% else %}Finalize this project title? Students will not be able to change it after this.{% endif %}')">
+                onsubmit="return confirm('{% if grp.title_finalized %}Un-finalize this title?{% else %}Finalize this project title?{% endif %}')">
             <input type="hidden" name="group_id" value="{{ grp.id }}">
             {% if grp.title_finalized %}
-              <button type="submit" class="btn btn-sm" style="background:#fff7ed;color:#d97706;border:1.5px solid #fed7aa;">
-                🔓 Un-finalize
-              </button>
+              <button type="submit" class="btn btn-sm" style="background:#fff7ed;color:#d97706;border:1.5px solid #fed7aa;">🔓 Un-finalize</button>
             {% else %}
-              <button type="submit" class="btn btn-success btn-sm">
-                ✅ Finalize Title
-              </button>
+              <button type="submit" class="btn btn-success btn-sm">✅ Finalize Title</button>
             {% endif %}
           </form>
           {% endif %}
-
-          <!-- Allocate Guide -->
           <button class="btn btn-outline btn-sm"
             onclick="openAllocate({{ grp.id }}, '{{ grp.guide_id or '' }}', '{{ (grp.project_title or '')|replace("'","\\'")|replace('"','&quot;') }}')">
             {% if grp.guide_name %}Change Guide{% else %}Allocate Guide{% endif %}
@@ -111,7 +103,6 @@
   {% endif %}
 </div>
 
-<!-- Allocate Guide Modal -->
 <div class="modal-backdrop" id="allocateModal">
   <div class="modal">
     <div class="modal-header">
@@ -147,13 +138,11 @@ function openAllocate(groupId, currentGuideId, projectTitle) {
   if (currentGuideId) document.getElementById('allocGuideSelect').value = currentGuideId;
   openModal('allocateModal');
 }
-
 function filterGroups(type, btn) {
-  document.querySelectorAll('.filter-btn, button[onclick^="filterGroups"]').forEach(b => {
+  document.querySelectorAll('button[onclick^="filterGroups"]').forEach(b => {
     b.style.background = '#fafaf8'; b.style.color = '#888'; b.style.borderColor = '#eee';
   });
   btn.style.background = '#111'; btn.style.color = '#fff'; btn.style.borderColor = '#111';
-
   document.querySelectorAll('.group-card').forEach(card => {
     const fin = card.dataset.finalized === '1';
     const hasTitle = card.dataset.hasTitle === '1';
