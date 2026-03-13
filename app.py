@@ -1,7 +1,7 @@
 """
 Project Allocation System - Flask Application
 Run: python app.py
-Visit: http://localhost:5000
+Visit: http://localhost:5500
 """
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
@@ -683,8 +683,8 @@ if __name__ == '__main__':
     print("\n" + "="*55)
     print("  Project Allocation System - Running!")
     print("="*55)
-    print("  URL: http://localhost:5000")
+    print("  URL: http://localhost:5500")
     print("  Coordinator: coordinator@college.edu / coord123")
     print("  Students: Email (login) / PRN (password) — after upload")
     print("="*55 + "\n")
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5500)
