@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}My Groups — Guide{% endblock %}
+{% block content %}
+<div class="page fade-in">
+  <div class="page-header">
+    <h1>My Assigned Groups</h1>
+    <p>{{ groups|length }} group(s) assigned to you</p>
+  </div>
+
+  {% if not groups %}
+  <div class="card">
+    <div class="empty">
+      <div class="empty-icon">👥</div>
+      <h3>No Groups Assigned</h3>
+      <p>The coordinator will assign student groups to you. Check back later.</p>
+    </div>
+  </div>
+  {% else %}
+  <div style="display:flex;flex-direction:column;gap:14px;">
+    {% for item in groups %}
+    {% set g = item.group %}
+    {% set members = item.members %}
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">GROUP {{ loop.index }}</div>
+          <div style="font-size:20px;font-weight:800;letter-spacing:-0.02em;">
+            {{ g.project_title or '<span style="color:#ccc;font-weight:400;">No project title selected</span>'|safe }}
+          </div>
+        </div>
+        <span class="badge badge-blue">{{ members|length }} Members</span>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+        {% for m in members %}
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:20px;background:{% if m.is_lead %}#e0f2fe{% else %}#f5f5f3{% endif %};">
+          <span style="font-size:14px;font-weight:{% if m.is_lead %}700{% else %}500{% endif %};color:{% if m.is_lead %}#0891b2{% else %}#444{% endif %};">
+            {% if m.is_lead %}👑{% endif %} {{ m.name }}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div style="padding:12px 14px;background:#f8f8f6;border-radius:8px;display:flex;gap:24px;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#aaa;">Team Lead</div>
+          <div style="font-size:14px;font-weight:600;margin-top:2px;">{{ g.lead_name }} ({{ g.lead_roll }})</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#aaa;">Formed On</div>
+          <div style="font-size:14px;font-weight:600;margin-top:2px;">{{ g.created_at[:10] if g.created_at else '—' }}</div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

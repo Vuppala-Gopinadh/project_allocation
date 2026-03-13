@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Guide{% endblock %}
+{% block content %}
+<div class="page fade-in">
+  <div class="page-header">
+    <h1>Welcome, {{ guide.name }}</h1>
+    <p>{{ guide.department or 'Faculty' }}{% if guide.expertise %} · {{ guide.expertise }}{% endif %}</p>
+  </div>
+
+  <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#e0f2fe">👥</div>
+      <div><div class="stat-val" style="color:#0891b2">{{ groups|length }}</div><div class="stat-label">Groups Assigned</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#dcfce7">📋</div>
+      <div><div class="stat-val" style="color:#059669">{{ titles|length }}</div><div class="stat-label">Project Titles</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#ede9fe">📄</div>
+      <div><div class="stat-val" style="color:#7c3aed">{{ groups|selectattr('project_title')|list|length }}</div><div class="stat-label">Titles Chosen</div></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- My Groups -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Assigned Groups</div>
+        <a href="{{ url_for('guide_groups') }}" class="btn btn-secondary btn-sm">View All</a>
+      </div>
+      {% if groups %}
+        {% for g in groups[:4] %}
+        <div style="padding:12px 0;border-bottom:1px solid #f5f5f3;">
+          <div style="font-weight:600;font-size:14px;">{{ g.project_title or '<span style="color:#bbb;">No title</span>'|safe }}</div>
+          <div class="text-muted">Lead: {{ g.lead_name or '—' }} · {{ g.member_count }} members</div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty" style="padding:24px 0;">
+          <div style="font-size:36px;margin-bottom:8px;">👥</div>
+          <p>No groups assigned yet.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Project Titles -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">My Project Titles</div>
+        <a href="{{ url_for('guide_titles') }}" class="btn btn-secondary btn-sm">Manage</a>
+      </div>
+      {% if titles %}
+        {% for t in titles[:5] %}
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f5f5f3;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#0891b2;flex-shrink:0;"></div>
+          <div style="font-size:14px;font-weight:500;">{{ t.title }}</div>
+        </div>
+        {% endfor %}
+        {% if titles|length > 5 %}
+          <div class="text-muted" style="margin-top:10px;font-size:13px;">+{{ titles|length - 5 }} more titles</div>
+        {% endif %}
+      {% else %}
+        <div class="empty" style="padding:24px 0;">
+          <div style="font-size:36px;margin-bottom:8px;">📋</div>
+          <p>No titles added yet.</p>
+          <a href="{{ url_for('guide_titles') }}" class="btn btn-sm btn-guide" style="margin-top:10px;">Add Titles</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

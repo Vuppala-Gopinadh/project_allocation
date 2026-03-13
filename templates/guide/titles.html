@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Project Titles — Guide{% endblock %}
+{% block content %}
+<div class="page fade-in">
+  <div class="page-header">
+    <h1>Project Title Suggestions</h1>
+    <p>Add titles for students to choose from when forming groups</p>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title" style="margin-bottom:16px;">Add New Title</div>
+        <form method="POST" action="/guide/titles/add">
+          <div class="form-group">
+            <label class="form-label">Project Title</label>
+            <input class="form-control" name="title" placeholder="e.g. AI-based Disease Prediction System" required>
+          </div>
+          <button type="submit" class="btn btn-guide" style="margin-top:12px;width:100%;justify-content:center;">Add Title</button>
+        </form>
+      </div>
+
+      <div class="card" style="background:#f0f9ff;border-color:#bae6fd;">
+        <div style="font-weight:700;margin-bottom:8px;font-size:14px;color:#0891b2;">💡 Tips</div>
+        <ul style="font-size:13px;color:#555;line-height:2;padding-left:18px;">
+          <li>Be descriptive and specific</li>
+          <li>Students will see your name with each title</li>
+          <li>You can add multiple titles</li>
+          <li>Students may also enter their own custom title</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" style="margin-bottom:16px;">
+        <div class="card-title">Your Titles ({{ titles|length }})</div>
+      </div>
+      {% if not titles %}
+      <div class="empty" style="padding:40px 0;">
+        <div class="empty-icon">📋</div>
+        <h3>No Titles Yet</h3>
+        <p>Add project titles for students to choose from.</p>
+      </div>
+      {% else %}
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        {% for t in titles %}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px;background:#f8f8f6;border-radius:10px;border:1px solid #f0f0ee;">
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:14px;">{{ t.title }}</div>
+            <div class="text-muted" style="font-size:12px;">Added {{ t.created_at[:10] if t.created_at else '' }}</div>
+          </div>
+          <form method="POST" action="/guide/titles/delete/{{ t.id }}" onsubmit="return confirm('Remove this title?')">
+            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+          </form>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
