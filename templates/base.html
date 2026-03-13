@@ -274,11 +274,13 @@
       <a href="{{ url_for('coord_guides') }}" class="{% if request.endpoint == 'coord_guides' %}active{% endif %}">Guides</a>
       <a href="{{ url_for('coord_groups') }}" class="{% if request.endpoint == 'coord_groups' %}active{% endif %}">Groups</a>
       <a href="{{ url_for('coord_allocations') }}" class="{% if request.endpoint == 'coord_allocations' %}active{% endif %}">Allocations</a>
+      <a href="{{ url_for('coord_papers') }}" class="{% if request.endpoint == 'coord_papers' %}active{% endif %}" style="{% if request.endpoint == 'coord_papers' %}{% else %}color:#7c3aed;font-weight:600;{% endif %}">📰 Papers</a>
     {% elif session.role == 'guide' %}
       <a href="{{ url_for('guide_dashboard') }}" class="{% if request.endpoint == 'guide_dashboard' %}active{% endif %}">Dashboard</a>
       <a href="{{ url_for('guide_groups') }}" class="{% if request.endpoint == 'guide_groups' %}active{% endif %}">My Groups</a>
       <a href="{{ url_for('guide_titles') }}" class="{% if request.endpoint == 'guide_titles' %}active{% endif %}">Project Titles</a>
       <a href="{{ url_for('guide_submissions') }}" class="{% if request.endpoint == 'guide_submissions' %}active{% endif %}">Submissions</a>
+      <a href="{{ url_for('guide_papers') }}" class="{% if request.endpoint == 'guide_papers' %}active{% endif %}" style="{% if request.endpoint == 'guide_papers' %}{% else %}color:#0891b2;font-weight:600;{% endif %}">📰 Papers</a>
     {% elif session.role == 'student' %}
       <a href="{{ url_for('student_dashboard') }}" class="{% if request.endpoint == 'student_dashboard' %}active{% endif %}">My Group</a>
     {% endif %}
@@ -311,7 +313,6 @@
 </main>
 
 <script>
-  // Modal helpers
   function openModal(id) { document.getElementById(id).classList.add('open'); }
   function closeModal(id) { document.getElementById(id).classList.remove('open'); }
   document.querySelectorAll('.modal-backdrop').forEach(m => {

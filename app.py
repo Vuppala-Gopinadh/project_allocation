@@ -4,7 +4,7 @@ Run: python app.py
 Visit: http://localhost:5500
 """
 
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import sqlite3, os, csv, io, json
@@ -15,11 +15,17 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = "project_alloc_secret_2024"
 app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
 
 DB = 'instance/project_allocation.db'
 os.makedirs('uploads', exist_ok=True)
+os.makedirs('uploads/papers', exist_ok=True)
 os.makedirs('instance', exist_ok=True)
+
+ALLOWED_EXTENSIONS = {'pdf'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # ─── DATABASE ───────────────────────────────────────────────────────────────
 def get_db():
@@ -31,7 +37,6 @@ def init_db():
     conn = get_db()
     c = conn.cursor()
 
-    # Create all tables (fresh install)
     c.executescript('''
         CREATE TABLE IF NOT EXISTS coordinator (
             id INTEGER PRIMARY KEY,
@@ -82,12 +87,26 @@ def init_db():
             created_at TEXT DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(guide_id) REFERENCES guide(id)
         );
+        CREATE TABLE IF NOT EXISTS paper_publication (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            group_id INTEGER NOT NULL,
+            stage INTEGER NOT NULL CHECK(stage IN (1, 2)),
+            paper_title TEXT NOT NULL,
+            journal_name TEXT NOT NULL,
+            volume_no TEXT NOT NULL,
+            issue TEXT NOT NULL,
+            timeline TEXT NOT NULL,
+            e_issn TEXT NOT NULL,
+            pdf_filename TEXT,
+            submitted_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(group_id) REFERENCES project_group(id),
+            UNIQUE(group_id, stage)
+        );
     ''')
 
     # ── Auto-migrations ─────────────────────────────────────────────────────
     existing_cols = [row[1] for row in c.execute("PRAGMA table_info(student)").fetchall()]
     if 'roll_no' in existing_cols and 'prn' not in existing_cols:
-        print("  [Migration] roll_no -> prn ...")
         c.executescript('''
             ALTER TABLE student RENAME TO student_old;
             CREATE TABLE student (
@@ -110,7 +129,6 @@ def init_db():
     pg_cols = [row[1] for row in c.execute("PRAGMA table_info(project_group)").fetchall()]
     if 'title_finalized' not in pg_cols:
         c.execute("ALTER TABLE project_group ADD COLUMN title_finalized INTEGER DEFAULT 0")
-        print("  [Migration] Added title_finalized column.")
 
     # Default coordinator
     existing = c.execute("SELECT id FROM coordinator WHERE email='coordinator@college.edu'").fetchone()
@@ -184,6 +202,14 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
+# ─── SERVE UPLOADED PAPERS ──────────────────────────────────────────────────
+@app.route('/view-paper/<filename>')
+def serve_paper(filename):
+    if session.get('role') not in ('coordinator', 'guide', 'student'):
+        return redirect(url_for('login'))
+    papers_dir = os.path.abspath(os.path.join(app.config['UPLOAD_FOLDER'], 'papers'))
+    return send_from_directory(papers_dir, filename)
+
 # ─── ROUTES: COORDINATOR ────────────────────────────────────────────────────
 @app.route('/coordinator/dashboard')
 @login_required('coordinator')
@@ -196,6 +222,8 @@ def coord_dashboard():
         'allocated': conn.execute("SELECT COUNT(*) FROM project_group WHERE guide_id IS NOT NULL").fetchone()[0],
         'finalized': conn.execute("SELECT COUNT(*) FROM project_group WHERE title_finalized=1").fetchone()[0],
         'pending': conn.execute("SELECT COUNT(*) FROM project_group WHERE title_finalized=0 AND project_title IS NOT NULL AND project_title != ''").fetchone()[0],
+        'papers_s1': conn.execute("SELECT COUNT(*) FROM paper_publication WHERE stage=1").fetchone()[0],
+        'papers_s2': conn.execute("SELECT COUNT(*) FROM paper_publication WHERE stage=2").fetchone()[0],
     }
     recent_groups = conn.execute("""
         SELECT pg.id, pg.project_title, pg.guide_id, pg.title_finalized,
@@ -369,7 +397,11 @@ def coord_groups():
             JOIN student s ON gm.student_id = s.id
             WHERE gm.group_id=?
         """, (grp['id'],)).fetchall()
-        groups_with_members.append({'group': grp, 'members': members})
+        papers = conn.execute(
+            "SELECT stage FROM paper_publication WHERE group_id=?", (grp['id'],)
+        ).fetchall()
+        paper_stages = [p['stage'] for p in papers]
+        groups_with_members.append({'group': grp, 'members': members, 'paper_stages': paper_stages})
 
     conn.close()
     return render_template('coordinator/groups.html', groups=groups_with_members, guides=guides)
@@ -400,7 +432,6 @@ def finalize_title():
         flash('Cannot finalize — the group has not submitted a project title yet.', 'error')
         conn.close()
         return redirect(url_for('coord_groups'))
-    # Toggle finalized
     new_status = 0 if grp['title_finalized'] else 1
     conn.execute("UPDATE project_group SET title_finalized=? WHERE id=?", (new_status, group_id))
     conn.commit()
@@ -438,6 +469,24 @@ def coord_allocations():
     """).fetchall()
     conn.close()
     return render_template('coordinator/allocations.html', guide_data=guide_data, unallocated=unallocated)
+
+# ─── COORDINATOR: PAPER PUBLICATIONS VIEW ───────────────────────────────────
+@app.route('/coordinator/papers')
+@login_required('coordinator')
+def coord_papers():
+    conn = get_db()
+    papers = conn.execute("""
+        SELECT pp.*, pg.project_title,
+               s.name as lead_name, s.prn as lead_roll,
+               g.name as guide_name
+        FROM paper_publication pp
+        JOIN project_group pg ON pp.group_id = pg.id
+        LEFT JOIN student s ON pg.team_lead_id = s.id
+        LEFT JOIN guide g ON pg.guide_id = g.id
+        ORDER BY pp.stage, pp.submitted_at DESC
+    """).fetchall()
+    conn.close()
+    return render_template('coordinator/papers.html', papers=papers)
 
 # ─── ROUTES: GUIDE ──────────────────────────────────────────────────────────
 @app.route('/guide/dashboard')
@@ -535,6 +584,24 @@ def guide_submissions():
     conn.close()
     return render_template('guide/submissions.html', groups=groups)
 
+# ─── GUIDE: PAPER PUBLICATIONS VIEW ─────────────────────────────────────────
+@app.route('/guide/papers')
+@login_required('guide')
+def guide_papers():
+    conn = get_db()
+    guide_id = session['user_id']
+    papers = conn.execute("""
+        SELECT pp.*, pg.project_title,
+               s.name as lead_name, s.prn as lead_roll
+        FROM paper_publication pp
+        JOIN project_group pg ON pp.group_id = pg.id
+        LEFT JOIN student s ON pg.team_lead_id = s.id
+        WHERE pg.guide_id=?
+        ORDER BY pp.stage, pp.submitted_at DESC
+    """, (guide_id,)).fetchall()
+    conn.close()
+    return render_template('guide/papers.html', papers=papers)
+
 # ─── ROUTES: STUDENT ────────────────────────────────────────────────────────
 @app.route('/student/dashboard')
 @login_required('student')
@@ -579,11 +646,21 @@ def student_dashboard():
     """).fetchall()
 
     student = conn.execute("SELECT * FROM student WHERE id=?", (sid,)).fetchone()
+
+    # Fetch paper publications for this group
+    papers = {}
+    if group:
+        pubs = conn.execute(
+            "SELECT * FROM paper_publication WHERE group_id=?", (group['id'],)
+        ).fetchall()
+        for p in pubs:
+            papers[p['stage']] = p
+
     conn.close()
     return render_template('student/dashboard.html',
                            group=group, members=members,
                            available=available, titles=titles,
-                           student=student)
+                           student=student, papers=papers)
 
 @app.route('/student/form-group', methods=['POST'])
 @login_required('student')
@@ -675,6 +752,91 @@ def update_title():
     conn.commit()
     conn.close()
     flash('✅ Project title updated successfully.', 'success')
+    return redirect(url_for('student_dashboard'))
+
+# ─── STUDENT: SUBMIT PAPER PUBLICATION ──────────────────────────────────────
+@app.route('/student/submit-paper', methods=['POST'])
+@login_required('student')
+def submit_paper():
+    sid = session['user_id']
+    conn = get_db()
+
+    grp = conn.execute("""
+        SELECT pg.id FROM group_member gm
+        JOIN project_group pg ON gm.group_id = pg.id
+        WHERE gm.student_id=?
+    """, (sid,)).fetchone()
+
+    if not grp:
+        flash('You are not in a group.', 'error')
+        conn.close()
+        return redirect(url_for('student_dashboard'))
+
+    group_id = grp['id']
+    stage = request.form.get('stage', type=int)
+    paper_title = request.form.get('paper_title', '').strip()
+    journal_name = request.form.get('journal_name', '').strip()
+    volume_no = request.form.get('volume_no', '').strip()
+    issue = request.form.get('issue', '').strip()
+    timeline = request.form.get('timeline', '').strip()
+    e_issn = request.form.get('e_issn', '').strip()
+
+    if stage not in (1, 2):
+        flash('Invalid stage.', 'error')
+        conn.close()
+        return redirect(url_for('student_dashboard'))
+
+    if not all([paper_title, journal_name, volume_no, issue, timeline, e_issn]):
+        flash('All publication details are required before uploading the PDF.', 'error')
+        conn.close()
+        return redirect(url_for('student_dashboard'))
+
+    # Handle PDF upload
+    pdf_file = request.files.get('pdf_file')
+    if not pdf_file or pdf_file.filename == '':
+        flash('Please upload the publication PDF.', 'error')
+        conn.close()
+        return redirect(url_for('student_dashboard'))
+
+    if not allowed_file(pdf_file.filename):
+        flash('Only PDF files are allowed.', 'error')
+        conn.close()
+        return redirect(url_for('student_dashboard'))
+
+    # Save PDF with unique name
+    ts = datetime.now().strftime('%Y%m%d%H%M%S')
+    safe_name = secure_filename(pdf_file.filename)
+    pdf_filename = f"group{group_id}_stage{stage}_{ts}_{safe_name}"
+    pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], 'papers', pdf_filename)
+    pdf_file.save(pdf_path)
+
+    # Delete old PDF if re-submitting
+    old = conn.execute(
+        "SELECT pdf_filename FROM paper_publication WHERE group_id=? AND stage=?", (group_id, stage)
+    ).fetchone()
+    if old and old['pdf_filename']:
+        old_path = os.path.join(app.config['UPLOAD_FOLDER'], 'papers', old['pdf_filename'])
+        if os.path.exists(old_path):
+            os.remove(old_path)
+
+    # Upsert
+    conn.execute("""
+        INSERT INTO paper_publication
+            (group_id, stage, paper_title, journal_name, volume_no, issue, timeline, e_issn, pdf_filename, submitted_at)
+        VALUES (?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)
+        ON CONFLICT(group_id, stage) DO UPDATE SET
+            paper_title=excluded.paper_title,
+            journal_name=excluded.journal_name,
+            volume_no=excluded.volume_no,
+            issue=excluded.issue,
+            timeline=excluded.timeline,
+            e_issn=excluded.e_issn,
+            pdf_filename=excluded.pdf_filename,
+            submitted_at=CURRENT_TIMESTAMP
+    """, (group_id, stage, paper_title, journal_name, volume_no, issue, timeline, e_issn, pdf_filename))
+    conn.commit()
+    conn.close()
+    flash(f'✅ Stage {stage} paper publication submitted successfully!', 'success')
     return redirect(url_for('student_dashboard'))
 
 # ─── RUN ────────────────────────────────────────────────────────────────────
