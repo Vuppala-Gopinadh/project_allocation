@@ -68,6 +68,10 @@
   border: 1.5px solid #86efac; border-radius: 12px; padding: 16px;
   margin-bottom: 12px;
 }
+
+/* Truncate long text with graceful ellipsis while keeping line breaks tidy */
+.multiline-ellipsis { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; word-break: break-word; }
+.multiline-ellipsis-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; word-break: break-word; }
 </style>
 {% endblock %}
 {% block content %}
@@ -133,7 +137,7 @@
             <div style="font-size:28px;">✅</div>
             <div>
               <div style="font-size:11px;font-weight:700;opacity:0.7;text-transform:uppercase;letter-spacing:0.06em;">Finalized Project</div>
-              <div style="font-size:18px;font-weight:800;margin-top:2px;">{{ group.project_title }}</div>
+              <div style="font-size:18px;font-weight:800;margin-top:2px;" class="multiline-ellipsis">{{ group.project_title }}</div>
             </div>
           </div>
           <div class="alert alert-info" style="font-size:13px;">
@@ -143,7 +147,7 @@
           {% if group.project_title %}
           <div style="padding:14px;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;margin-bottom:16px;">
             <div style="font-size:12px;font-weight:700;color:#c2410c;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Current Title (not yet finalized)</div>
-            <div style="font-size:16px;font-weight:700;color:#111;">{{ group.project_title }}</div>
+            <div style="font-size:16px;font-weight:700;color:#111;" class="multiline-ellipsis">{{ group.project_title }}</div>
           </div>
           {% endif %}
           <div style="font-size:13px;color:#888;margin-bottom:14px;">You can update your project title anytime until the coordinator finalizes it.</div>
@@ -166,7 +170,7 @@
                 <div class="title-option {% if group.project_title == t.title %}selected{% endif %}"
                      onclick="selectTitle('{{ t.title|replace("'","\\'")|replace('"', '&quot;') }}', this)"
                      data-title="{{ t.title }}">
-                  <div style="font-weight:600;font-size:14px;">{{ t.title }}</div>
+                  <div style="font-weight:600;font-size:14px;" class="multiline-ellipsis">{{ t.title }}</div>
                   <div class="text-muted" style="font-size:12px;">by {{ t.guide_name }}</div>
                 </div>
                 {% endfor %}
@@ -218,7 +222,7 @@
             <span class="badge badge-green" style="font-size:12px;">✅ Stage 1 Submitted</span>
             <span style="font-size:11px;color:#888;">{{ p1.submitted_at[:16] if p1.submitted_at else '' }}</span>
           </div>
-          <div style="font-size:13px;font-weight:700;color:#065f46;line-height:1.8;background:#fff;padding:12px 14px;border-radius:8px;border:1px solid #bbf7d0;font-style:italic;">
+          <div style="font-size:13px;font-weight:700;color:#065f46;line-height:1.8;background:#fff;padding:12px 14px;border-radius:8px;border:1px solid #bbf7d0;font-style:italic;" class="multiline-ellipsis-3">
             PUBLISHED PAPER ENTITLED "{{ p1.paper_title|upper }}" IN {{ p1.journal_name|upper }} VOLUME {{ p1.volume_no }}, ISSUE {{ p1.issue }}, {{ p1.timeline|upper }}, E ISSN {{ p1.e_issn }}
           </div>
           {% if p1.pdf_filename %}
@@ -315,7 +319,7 @@
             <span class="badge badge-green" style="font-size:12px;">✅ Stage 2 Submitted</span>
             <span style="font-size:11px;color:#888;">{{ p2.submitted_at[:16] if p2.submitted_at else '' }}</span>
           </div>
-          <div style="font-size:13px;font-weight:700;color:#065f46;line-height:1.8;background:#fff;padding:12px 14px;border-radius:8px;border:1px solid #bbf7d0;font-style:italic;">
+          <div style="font-size:13px;font-weight:700;color:#065f46;line-height:1.8;background:#fff;padding:12px 14px;border-radius:8px;border:1px solid #bbf7d0;font-style:italic;" class="multiline-ellipsis-3">
             PUBLISHED PAPER ENTITLED "{{ p2.paper_title|upper }}" IN {{ p2.journal_name|upper }} VOLUME {{ p2.volume_no }}, ISSUE {{ p2.issue }}, {{ p2.timeline|upper }}, E ISSN {{ p2.e_issn }}
           </div>
           {% if p2.pdf_filename %}
