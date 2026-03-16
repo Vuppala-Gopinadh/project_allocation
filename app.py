@@ -4,7 +4,7 @@ Run: python app.py
 Visit: http://localhost:5500
 """
 
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_from_directory, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import sqlite3, os, csv, io, json
@@ -478,15 +478,105 @@ def coord_papers():
     papers = conn.execute("""
         SELECT pp.*, pg.project_title,
                s.name as lead_name, s.prn as lead_roll,
-               g.name as guide_name
+               g.name as guide_name,
+               pg.id as grp_id
         FROM paper_publication pp
         JOIN project_group pg ON pp.group_id = pg.id
         LEFT JOIN student s ON pg.team_lead_id = s.id
         LEFT JOIN guide g ON pg.guide_id = g.id
         ORDER BY pp.stage, pp.submitted_at DESC
     """).fetchall()
+
+    # Attach member lists to each paper for display
+    papers_with_members = []
+    for p in papers:
+        members = conn.execute("""
+            SELECT s.prn, s.name
+            FROM group_member gm
+            JOIN student s ON gm.student_id = s.id
+            WHERE gm.group_id = ?
+            ORDER BY s.name
+        """, (p['grp_id'],)).fetchall()
+        papers_with_members.append({'paper': p, 'members': members})
+
+    # Stage counts for download button display
+    s1_count = sum(1 for pw in papers_with_members if pw['paper']['stage'] == 1)
+    s2_count = sum(1 for pw in papers_with_members if pw['paper']['stage'] == 2)
+
     conn.close()
-    return render_template('coordinator/papers.html', papers=papers)
+    return render_template('coordinator/papers.html',
+                           papers=papers,
+                           papers_with_members=papers_with_members,
+                           s1_count=s1_count,
+                           s2_count=s2_count)
+
+# ─── COORDINATOR: DOWNLOAD PAPER PUBLICATIONS AS DOCX ───────────────────────
+@app.route('/coordinator/papers/download/<int:stage>')
+@login_required('coordinator')
+def download_papers_docx(stage):
+    if stage not in (1, 2):
+        flash('Invalid stage.', 'error')
+        return redirect(url_for('coord_papers'))
+
+    conn = get_db()
+    papers_raw = conn.execute("""
+        SELECT pp.*, pg.project_title,
+               s.name as lead_name, s.prn as lead_prn,
+               pg.id as grp_id
+        FROM paper_publication pp
+        JOIN project_group pg ON pp.group_id = pg.id
+        LEFT JOIN student s ON pg.team_lead_id = s.id
+        WHERE pp.stage = ?
+        ORDER BY pp.submitted_at ASC
+    """, (stage,)).fetchall()
+
+    if not papers_raw:
+        flash(f'No Stage {stage} papers submitted yet.', 'warning')
+        conn.close()
+        return redirect(url_for('coord_papers'))
+
+    papers_data = []
+    for i, p in enumerate(papers_raw):
+        members = conn.execute("""
+            SELECT s.prn, s.name
+            FROM group_member gm
+            JOIN student s ON gm.student_id = s.id
+            WHERE gm.group_id = ?
+            ORDER BY s.name
+        """, (p['grp_id'],)).fetchall()
+
+        papers_data.append({
+            'sr_no': i + 1,
+            'paper_title': p['paper_title'],
+            'journal_name': p['journal_name'],
+            'volume_no': p['volume_no'],
+            'issue': p['issue'],
+            'timeline': p['timeline'],
+            'e_issn': p['e_issn'],
+            'prn_list': [m['prn'] for m in members],
+            'name_list': [m['name'] for m in members],
+        })
+    conn.close()
+
+    # Logo path: place college_logo.png in static/ folder
+    logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'college_logo.png')
+    if not os.path.exists(logo_path):
+        logo_path = None
+
+    try:
+        from generate_paper_doc import generate_paper_publication_doc
+        buf = generate_paper_publication_doc(papers_data, stage=stage, logo_path=logo_path)
+    except Exception as e:
+        flash(f'Error generating document: {str(e)}', 'error')
+        return redirect(url_for('coord_papers'))
+
+    filename = f'paper_publications_stage{stage}_{datetime.now().strftime("%Y%m%d")}.docx'
+    return send_file(
+        buf,
+        as_attachment=True,
+        download_name=filename,
+        mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    )
 
 # ─── ROUTES: GUIDE ──────────────────────────────────────────────────────────
 @app.route('/guide/dashboard')
@@ -647,7 +737,6 @@ def student_dashboard():
 
     student = conn.execute("SELECT * FROM student WHERE id=?", (sid,)).fetchone()
 
-    # Fetch paper publications for this group
     papers = {}
     if group:
         pubs = conn.execute(
@@ -791,7 +880,6 @@ def submit_paper():
         conn.close()
         return redirect(url_for('student_dashboard'))
 
-    # Handle PDF upload
     pdf_file = request.files.get('pdf_file')
     if not pdf_file or pdf_file.filename == '':
         flash('Please upload the publication PDF.', 'error')
@@ -803,14 +891,12 @@ def submit_paper():
         conn.close()
         return redirect(url_for('student_dashboard'))
 
-    # Save PDF with unique name
     ts = datetime.now().strftime('%Y%m%d%H%M%S')
     safe_name = secure_filename(pdf_file.filename)
     pdf_filename = f"group{group_id}_stage{stage}_{ts}_{safe_name}"
     pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], 'papers', pdf_filename)
     pdf_file.save(pdf_path)
 
-    # Delete old PDF if re-submitting
     old = conn.execute(
         "SELECT pdf_filename FROM paper_publication WHERE group_id=? AND stage=?", (group_id, stage)
     ).fetchone()
@@ -819,7 +905,6 @@ def submit_paper():
         if os.path.exists(old_path):
             os.remove(old_path)
 
-    # Upsert
     conn.execute("""
         INSERT INTO paper_publication
             (group_id, stage, paper_title, journal_name, volume_no, issue, timeline, e_issn, pdf_filename, submitted_at)
