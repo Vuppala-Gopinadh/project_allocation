@@ -4,7 +4,7 @@ Run: python app.py
 Visit: http://localhost:5500
 """
 
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_from_directory, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import sqlite3, os, csv, io, json
@@ -102,6 +102,31 @@ def init_db():
             FOREIGN KEY(group_id) REFERENCES project_group(id),
             UNIQUE(group_id, stage)
         );
+        CREATE TABLE IF NOT EXISTS marks_column (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            max_marks INTEGER NOT NULL CHECK(max_marks >= 0),
+            sort_order INTEGER NOT NULL DEFAULT 0,
+            stage INTEGER NOT NULL DEFAULT 1,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE TABLE IF NOT EXISTS marks_entry (
+            student_id INTEGER NOT NULL,
+            column_id INTEGER NOT NULL,
+            marks REAL,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY(student_id, column_id),
+            FOREIGN KEY(student_id) REFERENCES student(id),
+            FOREIGN KEY(column_id) REFERENCES marks_column(id)
+        );
+        CREATE TABLE IF NOT EXISTS marks_template (
+            id INTEGER PRIMARY KEY CHECK(id = 1),
+            academic_year TEXT NOT NULL,
+            evaluation_title TEXT NOT NULL,
+            stage_title TEXT NOT NULL,
+            class_name TEXT NOT NULL,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
     ''')
 
     # ── Auto-migrations ─────────────────────────────────────────────────────
@@ -130,12 +155,23 @@ def init_db():
     if 'title_finalized' not in pg_cols:
         c.execute("ALTER TABLE project_group ADD COLUMN title_finalized INTEGER DEFAULT 0")
 
+    marks_cols = [row[1] for row in c.execute("PRAGMA table_info(marks_column)").fetchall()]
+    if 'stage' not in marks_cols:
+        c.execute("ALTER TABLE marks_column ADD COLUMN stage INTEGER NOT NULL DEFAULT 1")
+
     # Default coordinator
     existing = c.execute("SELECT id FROM coordinator WHERE email='coordinator@college.edu'").fetchone()
     if not existing:
         c.execute("INSERT INTO coordinator (name, email, password) VALUES (?, ?, ?)",
                   ("Admin Coordinator", "coordinator@college.edu",
                    generate_password_hash("coord123")))
+
+    tmpl = c.execute("SELECT id FROM marks_template WHERE id=1").fetchone()
+    if not tmpl:
+        c.execute(
+            "INSERT INTO marks_template (id, academic_year, evaluation_title, stage_title, class_name) VALUES (1, ?, ?, ?, ?)",
+            ("Academic year 2024-25", "Evaluation sheet", "Project Stage-I Progress Presentation", "B.Tech CSE (Final year)")
+        )
     conn.commit()
     conn.close()
 
@@ -487,6 +523,503 @@ def coord_papers():
     """).fetchall()
     conn.close()
     return render_template('coordinator/papers.html', papers=papers)
+
+# ─── COORDINATOR: MARKS ALLOCATION ──────────────────────────────────────────
+@app.route('/coordinator/marks')
+@login_required('coordinator')
+def coord_marks():
+    conn = get_db()
+    stage = request.args.get('stage', '1')
+    stage = 2 if str(stage) == '2' else 1
+    columns = conn.execute(
+        "SELECT id, name, max_marks, sort_order FROM marks_column WHERE stage=? ORDER BY sort_order, id",
+        (stage,)
+    ).fetchall()
+
+    total_max = sum(int(c['max_marks']) for c in columns)
+    stage = request.args.get('stage', '1')
+    stage = 2 if str(stage) == '2' else 1
+
+    template = conn.execute(
+        "SELECT academic_year, evaluation_title, stage_title, class_name FROM marks_template WHERE id=1"
+    ).fetchone()
+    if not template:
+        template = {
+            'academic_year': 'Academic year 2024-25',
+            'evaluation_title': 'Evaluation sheet',
+            'stage_title': 'Project Stage-I Progress Presentation',
+            'class_name': 'B.Tech CSE (Final year)'
+        }
+
+    groups_raw = conn.execute("""
+        SELECT pg.id as group_id, pg.created_at,
+               g.name as guide_name
+        FROM project_group pg
+        LEFT JOIN guide g ON pg.guide_id = g.id
+        ORDER BY pg.created_at, pg.id
+    """).fetchall()
+
+    members_raw = conn.execute("""
+        SELECT gm.group_id, s.id as student_id, s.prn, s.name,
+               CASE WHEN pg.team_lead_id = s.id THEN 1 ELSE 0 END as is_lead
+        FROM group_member gm
+        JOIN student s ON gm.student_id = s.id
+        JOIN project_group pg ON gm.group_id = pg.id
+        ORDER BY gm.group_id, s.prn
+    """).fetchall()
+
+    members_by_group = {}
+    for row in members_raw:
+        members_by_group.setdefault(row['group_id'], []).append({
+            'id': row['student_id'],
+            'prn': row['prn'],
+            'name': row['name'],
+            'is_lead': bool(row['is_lead']),
+        })
+
+    groups = []
+    group_no = 1
+    for grp in groups_raw:
+        members = members_by_group.get(grp['group_id'], [])
+        if not members:
+            continue
+        groups.append({
+            'group_id': grp['group_id'],
+            'group_no': group_no,
+            'guide_name': grp['guide_name'] if grp['guide_name'] else None,
+            'members': members,
+        })
+        group_no += 1
+
+    student_ids = [m['id'] for g in groups for m in g['members']]
+    marks = {}
+    totals = {}
+    if student_ids and columns:
+        student_placeholders = ",".join(["?"] * len(student_ids))
+        col_ids = [c['id'] for c in columns]
+        col_placeholders = ",".join(["?"] * len(col_ids))
+        mark_rows = conn.execute(
+            f"""
+            SELECT student_id, column_id, marks
+            FROM marks_entry
+            WHERE student_id IN ({student_placeholders})
+              AND column_id IN ({col_placeholders})
+            """,
+            tuple(student_ids) + tuple(col_ids)
+        ).fetchall()
+        for m in mark_rows:
+            key = f"{m['student_id']}:{m['column_id']}"
+            marks[key] = m['marks']
+            totals[m['student_id']] = totals.get(m['student_id'], 0) + (m['marks'] or 0)
+
+    conn.close()
+    today = datetime.now().strftime('%d-%m-%Y')
+    return render_template(
+        'coordinator/marks.html',
+        groups=groups,
+        columns=columns,
+        marks=marks,
+        totals=totals,
+        total_max=total_max,
+        student_count=len(student_ids),
+        today=today,
+        template=template,
+        stage=stage,
+    )
+
+@app.route('/coordinator/marks/columns/add', methods=['POST'])
+@login_required('coordinator')
+def coord_marks_add_column():
+    name = request.form.get('name', '').strip()
+    max_marks = request.form.get('max_marks', type=int)
+    stage = request.form.get('stage', type=int)
+    stage = 2 if stage == 2 else 1
+
+    if not name or max_marks is None or max_marks < 0:
+        flash('Please enter a column name and valid max marks (>= 0).', 'error')
+        return redirect(url_for('coord_marks', stage=stage))
+
+    conn = get_db()
+    next_order = conn.execute(
+        "SELECT COALESCE(MAX(sort_order), 0) + 1 FROM marks_column WHERE stage=?",
+        (stage,)
+    ).fetchone()[0]
+    conn.execute(
+        "INSERT INTO marks_column (name, max_marks, sort_order, stage) VALUES (?,?,?,?)",
+        (name, max_marks, next_order, stage)
+    )
+    conn.commit()
+    conn.close()
+    flash('Marks column added.', 'success')
+    return redirect(url_for('coord_marks', stage=stage))
+
+@app.route('/coordinator/marks/columns/update', methods=['POST'])
+@login_required('coordinator')
+def coord_marks_update_column():
+    column_id = request.form.get('column_id', type=int)
+    name = request.form.get('name', '').strip()
+    max_marks = request.form.get('max_marks', type=int)
+    stage = request.form.get('stage', type=int)
+    stage = 2 if stage == 2 else 1
+
+    if not column_id or not name or max_marks is None or max_marks < 0:
+        flash('Please enter a valid column name and max marks (>= 0).', 'error')
+        return redirect(url_for('coord_marks', stage=stage))
+
+    conn = get_db()
+    existing = conn.execute("SELECT id FROM marks_column WHERE id=?", (column_id,)).fetchone()
+    if not existing:
+        conn.close()
+        flash('Column not found.', 'error')
+        return redirect(url_for('coord_marks', stage=stage))
+
+    max_existing = conn.execute(
+        "SELECT COALESCE(MAX(marks), 0) FROM marks_entry WHERE column_id=?",
+        (column_id,)
+    ).fetchone()[0]
+
+    if max_marks < float(max_existing or 0):
+        conn.close()
+        flash('Max marks cannot be less than existing marks in this column.', 'error')
+        return redirect(url_for('coord_marks', stage=stage))
+
+    conn.execute(
+        "UPDATE marks_column SET name=?, max_marks=? WHERE id=?",
+        (name, max_marks, column_id)
+    )
+    conn.commit()
+    conn.close()
+    flash('Marks column updated.', 'success')
+    return redirect(url_for('coord_marks', stage=stage))
+
+@app.route('/coordinator/marks/template/update', methods=['POST'])
+@login_required('coordinator')
+def coord_marks_update_template():
+    academic_year = request.form.get('academic_year', '').strip()
+    evaluation_title = request.form.get('evaluation_title', '').strip()
+    stage_title = request.form.get('stage_title', '').strip()
+    class_name = request.form.get('class_name', '').strip()
+
+    if not all([academic_year, evaluation_title, stage_title, class_name]):
+        flash('Please fill all template fields.', 'error')
+        return redirect(url_for('coord_marks'))
+
+    conn = get_db()
+    existing = conn.execute("SELECT id FROM marks_template WHERE id=1").fetchone()
+    if existing:
+        conn.execute("""
+            UPDATE marks_template
+            SET academic_year=?, evaluation_title=?, stage_title=?, class_name=?, updated_at=CURRENT_TIMESTAMP
+            WHERE id=1
+        """, (academic_year, evaluation_title, stage_title, class_name))
+    else:
+        conn.execute("""
+            INSERT INTO marks_template (id, academic_year, evaluation_title, stage_title, class_name)
+            VALUES (1, ?, ?, ?, ?)
+        """, (academic_year, evaluation_title, stage_title, class_name))
+    conn.commit()
+    conn.close()
+    flash('Template updated.', 'success')
+    return redirect(url_for('coord_marks'))
+
+@app.route('/coordinator/marks/columns/delete', methods=['POST'])
+@login_required('coordinator')
+def coord_marks_delete_column():
+    column_id = request.form.get('column_id', type=int)
+    stage = request.form.get('stage', type=int)
+    stage = 2 if stage == 2 else 1
+    if not column_id:
+        flash('Column not found.', 'error')
+        return redirect(url_for('coord_marks', stage=stage))
+
+    conn = get_db()
+    existing = conn.execute("SELECT id FROM marks_column WHERE id=?", (column_id,)).fetchone()
+    if not existing:
+        conn.close()
+        flash('Column not found.', 'error')
+        return redirect(url_for('coord_marks', stage=stage))
+
+    conn.execute("DELETE FROM marks_entry WHERE column_id=?", (column_id,))
+    conn.execute("DELETE FROM marks_column WHERE id=?", (column_id,))
+    conn.commit()
+    conn.close()
+    flash('Marks column deleted.', 'success')
+    return redirect(url_for('coord_marks', stage=stage))
+
+@app.route('/coordinator/marks/save', methods=['POST'])
+@login_required('coordinator')
+def coord_marks_save():
+    conn = get_db()
+    stage = request.form.get('stage', type=int)
+    stage = 2 if stage == 2 else 1
+    cols = conn.execute("SELECT id, max_marks FROM marks_column WHERE stage=?", (stage,)).fetchall()
+    max_map = {int(c['id']): float(c['max_marks']) for c in cols}
+
+    invalid = 0
+    updated = 0
+
+    for key, value in request.form.items():
+        if not key.startswith('m_'):
+            continue
+        parts = key.split('_')
+        if len(parts) != 3:
+            continue
+
+        try:
+            student_id = int(parts[1])
+            column_id = int(parts[2])
+        except ValueError:
+            continue
+
+        if column_id not in max_map:
+            continue
+
+        raw = (value or '').strip()
+        if raw == '':
+            conn.execute(
+                "DELETE FROM marks_entry WHERE student_id=? AND column_id=?",
+                (student_id, column_id)
+            )
+            continue
+
+        try:
+            marks_val = float(raw)
+        except ValueError:
+            invalid += 1
+            continue
+
+        if marks_val < 0 or marks_val > max_map[column_id]:
+            invalid += 1
+            continue
+
+        conn.execute("""
+            INSERT INTO marks_entry (student_id, column_id, marks, updated_at)
+            VALUES (?,?,?,CURRENT_TIMESTAMP)
+            ON CONFLICT(student_id, column_id) DO UPDATE SET
+                marks=excluded.marks,
+                updated_at=CURRENT_TIMESTAMP
+        """, (student_id, column_id, marks_val))
+        updated += 1
+
+    conn.commit()
+    conn.close()
+
+    if invalid:
+        flash('Some entries were ignored (invalid or exceeded max marks).', 'warning')
+    flash('Marks saved successfully.', 'success')
+    return redirect(url_for('coord_marks', stage=stage))
+
+@app.route('/coordinator/marks/export')
+@login_required('coordinator')
+def coord_marks_export():
+    try:
+        from docx import Document
+        from docx.shared import Inches
+        from docx.shared import Pt
+        from docx.enum.section import WD_ORIENT
+        from docx.enum.text import WD_ALIGN_PARAGRAPH
+    except ModuleNotFoundError:
+        flash('Word export requires python-docx. Install with: pip install python-docx', 'error')
+        return redirect(url_for('coord_marks'))
+
+    conn = get_db()
+    stage = request.args.get('stage', '1')
+    stage = 2 if str(stage) == '2' else 1
+    columns = conn.execute(
+        "SELECT id, name, max_marks, sort_order FROM marks_column WHERE stage=? ORDER BY sort_order, id",
+        (stage,)
+    ).fetchall()
+    total_max = sum(int(c['max_marks']) for c in columns)
+
+    template = conn.execute(
+        "SELECT academic_year, evaluation_title, stage_title, class_name FROM marks_template WHERE id=1"
+    ).fetchone()
+    if not template:
+        template = {
+            'academic_year': 'Academic year 2024-25',
+            'evaluation_title': 'Evaluation sheet',
+            'stage_title': 'Project Stage-I Progress Presentation',
+            'class_name': 'B.Tech CSE (Final year)'
+        }
+    export_class = request.args.get('class_name', '').strip()
+    if export_class:
+        template['class_name'] = export_class
+
+    groups_raw = conn.execute("""
+        SELECT pg.id as group_id, pg.created_at,
+               g.name as guide_name
+        FROM project_group pg
+        LEFT JOIN guide g ON pg.guide_id = g.id
+        ORDER BY pg.created_at, pg.id
+    """).fetchall()
+
+    members_raw = conn.execute("""
+        SELECT gm.group_id, s.id as student_id, s.prn, s.name,
+               CASE WHEN pg.team_lead_id = s.id THEN 1 ELSE 0 END as is_lead
+        FROM group_member gm
+        JOIN student s ON gm.student_id = s.id
+        JOIN project_group pg ON gm.group_id = pg.id
+        ORDER BY gm.group_id, s.prn
+    """).fetchall()
+
+    marks_rows = []
+    col_ids = [c['id'] for c in columns]
+    if col_ids:
+        col_placeholders = ",".join(["?"] * len(col_ids))
+        marks_rows = conn.execute(
+            f"SELECT student_id, column_id, marks FROM marks_entry WHERE column_id IN ({col_placeholders})",
+            tuple(col_ids)
+        ).fetchall()
+    conn.close()
+
+    members_by_group = {}
+    for row in members_raw:
+        members_by_group.setdefault(row['group_id'], []).append({
+            'id': row['student_id'],
+            'prn': row['prn'],
+            'name': row['name'],
+            'is_lead': bool(row['is_lead']),
+        })
+
+    marks_map = {(int(m['student_id']), int(m['column_id'])): m['marks'] for m in marks_rows}
+
+    def fmt_num(val):
+        if val is None:
+            return ""
+        try:
+            num = float(val)
+        except (TypeError, ValueError):
+            return str(val)
+        return str(int(num)) if num.is_integer() else str(num)
+
+    doc = Document()
+    section = doc.sections[0]
+    section.orientation = WD_ORIENT.LANDSCAPE
+    section.page_width, section.page_height = section.page_height, section.page_width
+    section.left_margin = Inches(0.4)
+    section.right_margin = Inches(0.4)
+    section.top_margin = Inches(0.4)
+    section.bottom_margin = Inches(0.4)
+
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(template['academic_year']).bold = True
+
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(template['evaluation_title']).bold = True
+
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    stage_title = "Project Stage-II Progress Presentation II" if stage == 2 else "Project Stage-I Progress Presentation I"
+    p.add_run(stage_title).bold = True
+
+    p = doc.add_paragraph()
+    p.paragraph_format.tab_stops.add_tab_stop(Inches(6.5))
+    p.add_run(f"Class: {template['class_name']}")
+    p.add_run("\t")
+    p.add_run(f"Date: {datetime.now().strftime('%d-%m-%Y')}")
+
+    headers = (
+        ["GROUP NO.", "SR. NO.", "PRN", "NAME OF STUDENT"]
+        + [f"{c['name']} ({c['max_marks']})" for c in columns]
+        + [f"TOTAL ({total_max})", "NAME AND SIGN OF GUIDE"]
+    )
+
+    table = doc.add_table(rows=1, cols=len(headers))
+    table.style = "Table Grid"
+    table.autofit = False
+
+    hdr_cells = table.rows[0].cells
+    for idx, title in enumerate(headers):
+        hdr_cells[idx].text = title
+        for para in hdr_cells[idx].paragraphs:
+            para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            for run in para.runs:
+                run.font.size = Pt(9)
+
+    sr_no = 1
+    group_no = 1
+    for grp in groups_raw:
+        members = members_by_group.get(grp['group_id'], [])
+        if not members:
+            continue
+
+        start_row = len(table.rows)
+        for mem_idx, mem in enumerate(members):
+            row_cells = table.add_row().cells
+            row_cells[0].text = str(group_no) if mem_idx == 0 else ""
+            row_cells[1].text = str(sr_no)
+            row_cells[2].text = str(mem['prn'])
+            name_text = str(mem['name'])
+            if mem.get('is_lead'):
+                name_text += " (Team Lead)"
+            row_cells[3].text = name_text
+
+            total = 0
+            for col_idx, c in enumerate(columns):
+                val = marks_map.get((mem['id'], int(c['id'])))
+                row_cells[4 + col_idx].text = fmt_num(val)
+                if val is not None:
+                    total += float(val or 0)
+
+            row_cells[4 + len(columns)].text = "" if not columns else fmt_num(total)
+            row_cells[4 + len(columns) + 1].text = (grp['guide_name'] or "N/A") if mem_idx == 0 else ""
+
+            sr_no += 1
+
+        end_row = len(table.rows) - 1
+        if end_row > start_row:
+            table.cell(start_row, 0).merge(table.cell(end_row, 0))
+            table.cell(start_row, len(headers) - 1).merge(table.cell(end_row, len(headers) - 1))
+
+        group_no += 1
+
+    # Set column widths to keep text horizontal
+    def set_col_width(table_obj, col_idx, width):
+        for r in table_obj.rows:
+            r.cells[col_idx].width = width
+
+    available_in = (section.page_width - section.left_margin - section.right_margin) / Inches(1)
+    fixed_in = {
+        'group': 0.55,
+        'sr': 0.5,
+        'prn': 1.05,
+        'name': 2.2,
+        'total': 0.7,
+        'guide': 1.4
+    }
+    fixed_sum = sum(fixed_in.values())
+    col_count = len(columns)
+    per_col = 0.55
+    if col_count > 0:
+        per_col = max(0.55, (available_in - fixed_sum) / col_count)
+
+    widths = [fixed_in['group'], fixed_in['sr'], fixed_in['prn'], fixed_in['name']]
+    widths += [per_col for _ in range(col_count)]
+    widths += [fixed_in['total'], fixed_in['guide']]
+
+    for idx, w in enumerate(widths):
+        set_col_width(table, idx, Inches(w))
+
+    # Reduce font size across table for fit
+    for row in table.rows:
+        for cell in row.cells:
+            for para in cell.paragraphs:
+                for run in para.runs:
+                    run.font.size = Pt(8)
+
+    out = io.BytesIO()
+    doc.save(out)
+    out.seek(0)
+
+    filename = f"marks_allocation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.docx"
+    return send_file(
+        out,
+        as_attachment=True,
+        download_name=filename,
+        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
 
 # ─── ROUTES: GUIDE ──────────────────────────────────────────────────────────
 @app.route('/guide/dashboard')
