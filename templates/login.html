@@ -3,14 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login — Project Allocation System</title>
+<title>Login - Project Allocation System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: 'DM Sans', sans-serif;
-    background: #f7f7f5;
+    font-family: 'Source Sans 3', sans-serif;
+    background:
+      radial-gradient(circle at top left, rgba(181,18,27,0.16), transparent 28%),
+      linear-gradient(135deg, #fff7f8 0%, #ffffff 48%, #fff1f2 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -26,72 +28,117 @@
     animation: fadeUp 0.4s ease;
   }
   .login-logo {
-    width: 72px; height: 72px; border-radius: 20px;
-    background: #111; display: flex; align-items: center;
-    justify-content: center; font-size: 36px;
-    margin: 0 auto 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #8f1018, #c42028);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 auto 16px;
+    box-shadow: 0 14px 34px rgba(143,16,24,0.24);
   }
   .login-brand h1 {
-    font-size: 26px; font-weight: 800; letter-spacing: -0.03em; color: #111;
+    font-family: 'Libre Baskerville', serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #8f1018;
   }
-  .login-brand p { color: #888; font-size: 15px; margin-top: 4px; }
+  .login-brand p { color: #7a5b5e; font-size: 15px; margin-top: 4px; }
 
   .login-card {
-    background: #fff;
-    border: 1px solid #e8e8e4;
+    background: linear-gradient(180deg, #fff 0%, #fffafb 100%);
+    border: 1px solid #ecd7d9;
     border-radius: 16px;
     padding: 32px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    box-shadow: 0 20px 44px rgba(99, 14, 22, 0.12);
     animation: fadeUp 0.4s ease 0.05s both;
   }
 
-  /* Portal Toggle */
   .portal-tabs { display: flex; gap: 6px; margin-bottom: 28px; }
   .portal-tab {
-    flex: 1; padding: 10px 8px; border-radius: 10px;
-    border: 2px solid #eee; background: #fafaf8;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px; font-weight: 700; cursor: pointer;
-    transition: all 0.2s; text-align: center; color: #aaa;
+    flex: 1;
+    padding: 10px 8px;
+    border-radius: 10px;
+    border: 2px solid #ead7d9;
+    background: #fff8f8;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    color: #9a8587;
     line-height: 1.3;
   }
-  .portal-tab:hover { border-color: #ccc; color: #666; }
-  .portal-tab.active-coord { border-color: #7c3aed; background: #ede9fe; color: #7c3aed; }
-  .portal-tab.active-guide { border-color: #0891b2; background: #e0f2fe; color: #0891b2; }
-  .portal-tab.active-student { border-color: #059669; background: #dcfce7; color: #059669; }
+  .portal-tab:hover { border-color: #d6aab0; color: #8f1018; }
+  .portal-tab.active-coord,
+  .portal-tab.active-guide,
+  .portal-tab.active-student {
+    border-color: #b5121b;
+    background: #fdecee;
+    color: #b5121b;
+  }
 
   .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-  .form-label { font-size: 13px; font-weight: 600; color: #555; }
+  .form-label { font-size: 13px; font-weight: 700; color: #68484b; }
   .form-control {
-    border: 1.5px solid #e5e5e5; border-radius: 8px; padding: 11px 14px;
-    font-size: 14px; font-family: 'DM Sans', sans-serif;
-    outline: none; transition: border 0.18s; background: #fafafa; width: 100%;
-    color: #111;
+    border: 1.5px solid #e9d3d6;
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 14px;
+    font-family: 'Source Sans 3', sans-serif;
+    outline: none;
+    transition: border 0.18s;
+    background: #fffafb;
+    width: 100%;
+    color: #241819;
   }
-  .form-control:focus { border-color: #111; background: #fff; }
+  .form-control:focus { border-color: #b5121b; background: #fff; }
 
   .btn-login {
-    width: 100%; padding: 13px; border: none; border-radius: 10px;
-    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700;
-    cursor: pointer; transition: all 0.2s; margin-top: 6px;
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 6px;
     color: #fff;
+    background: linear-gradient(135deg, #8f1018, #c42028);
   }
   .btn-login:hover { transform: translateY(-1px); opacity: 0.92; }
-  .btn-coord { background: #7c3aed; }
-  .btn-guide { background: #0891b2; }
-  .btn-student { background: #059669; }
+  .btn-coord, .btn-guide, .btn-student { background: linear-gradient(135deg, #8f1018, #c42028); }
 
   .alert-error {
-    background: #fee2e2; color: #dc2626; border: 1px solid #fecaca;
-    padding: 11px 14px; border-radius: 8px; font-size: 14px;
-    font-weight: 500; margin-bottom: 16px;
+    background: #fdecee;
+    color: #a30f18;
+    border: 1px solid #f0c8ce;
+    padding: 11px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 16px;
   }
 
   .demo-box {
-    margin-top: 20px; padding: 14px; background: #f8f8f6;
-    border-radius: 10px; font-size: 12px; color: #888; line-height: 1.8;
+    margin-top: 20px;
+    padding: 14px;
+    background: #fff4f5;
+    border: 1px solid #f2d6d9;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #7a5b5e;
+    line-height: 1.8;
   }
-  .demo-box strong { color: #555; }
+  .demo-box strong { color: #8f1018; }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(16px); }
@@ -102,9 +149,9 @@
 <body>
 <div class="login-wrap">
   <div class="login-brand">
-    <div class="login-logo">🏛️</div>
-    <h1>Project Allocator</h1>
-    <p>Final Year Project Management System</p>
+    <div class="login-logo">SU</div>
+    <h1>Sandip University</h1>
+    <p>Project Allocation and Final Year Management Portal</p>
   </div>
 
   <div class="login-card">
@@ -116,16 +163,15 @@
       {% endif %}
     {% endwith %}
 
-    <!-- Portal Selector -->
     <div class="portal-tabs" id="portalTabs">
       <button class="portal-tab active-coord" onclick="setPortal('coordinator', this)" type="button">
-        📋<br>Coordinator
+        CO<br>Coordinator
       </button>
       <button class="portal-tab" onclick="setPortal('guide', this)" type="button">
-        🎓<br>Guide
+        GD<br>Guide
       </button>
       <button class="portal-tab" onclick="setPortal('student', this)" type="button">
-        🎒<br>Student
+        ST<br>Student
       </button>
     </div>
 
@@ -148,9 +194,9 @@
 
     <div class="demo-box">
       <strong>Demo Credentials:</strong><br>
-      📋 Coordinator: coordinator@college.edu / coord123<br>
-      🎓 Guide: Add via coordinator panel<br>
-      🎒 Student: Email (login ID) / PRN (password) — after CSV upload
+      Coordinator: coordinator@college.edu / coord123<br>
+      Guide: Add via coordinator panel<br>
+      Student: Email (login ID) / PRN (password) - after CSV upload
     </div>
   </div>
 </div>

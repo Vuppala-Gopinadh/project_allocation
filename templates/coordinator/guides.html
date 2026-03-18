@@ -24,7 +24,7 @@
     {% for g in guides %}
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
-        <div style="width:48px;height:48px;border-radius:14px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;font-size:24px;">🎓</div>
+        <div style="width:48px;height:48px;border-radius:14px;background:#fdecee;display:flex;align-items:center;justify-content:center;font-size:24px;">🎓</div>
         <form method="POST" action="/coordinator/guides/delete/{{ g.id }}" onsubmit="return confirm('Remove {{ g.name }}?')">
           <button type="submit" class="btn btn-danger btn-sm">Remove</button>
         </form>

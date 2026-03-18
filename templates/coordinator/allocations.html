@@ -20,7 +20,7 @@
   <div class="card" style="margin-bottom:16px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:{% if grps %}16{% else %}0{% endif %}px;">
       <div style="display:flex;align-items:center;gap:14px;">
-        <div style="width:48px;height:48px;border-radius:14px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;font-size:24px;">🎓</div>
+        <div style="width:48px;height:48px;border-radius:14px;background:#fdecee;display:flex;align-items:center;justify-content:center;font-size:24px;">🎓</div>
         <div>
           <div style="font-weight:800;font-size:16px;">{{ guide.name }}</div>
           <div class="text-muted">{{ guide.email }} {% if guide.department %}· {{ guide.department }}{% endif %}</div>
@@ -57,7 +57,7 @@
   {% endif %}
 
   {% if unallocated %}
-  <div class="card" style="border-left:4px solid #d97706;">
+  <div class="card" style="border-left:4px solid #c74a30;">
     <div style="font-weight:700;margin-bottom:12px;font-size:15px;">⏳ Unallocated Groups</div>
     {% for g in unallocated %}
     <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#fff7ed;border-radius:8px;margin-bottom:8px;">
@@ -65,7 +65,7 @@
         <div style="font-weight:600;">{{ g.project_title or 'No title' }}</div>
         <div class="text-muted">Lead: {{ g.lead_name or '—' }} · {{ g.member_count }} members</div>
       </div>
-      <a href="{{ url_for('coord_groups') }}" class="btn btn-sm" style="background:#d9780620;color:#d97706;border:none;">Assign Guide</a>
+      <a href="{{ url_for('coord_groups') }}" class="btn btn-sm" style="background:#fff1f2;color:#b5121b;border:none;">Assign Guide</a>
     </div>
     {% endfor %}
   </div>

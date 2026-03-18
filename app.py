@@ -934,4 +934,4 @@ if __name__ == '__main__':
     print("  Coordinator: coordinator@college.edu / coord123")
     print("  Students: Email (login) / PRN (password) — after upload")
     print("="*55 + "\n")
-    app.run(debug=True, port=5500)
+    app.run(debug=True, port=5500);

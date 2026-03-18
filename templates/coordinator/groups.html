@@ -85,7 +85,7 @@
                 onsubmit="return confirm('{% if grp.title_finalized %}Un-finalize this title?{% else %}Finalize this project title?{% endif %}')">
             <input type="hidden" name="group_id" value="{{ grp.id }}">
             {% if grp.title_finalized %}
-              <button type="submit" class="btn btn-sm" style="background:#fff7ed;color:#d97706;border:1.5px solid #fed7aa;">🔓 Un-finalize</button>
+              <button type="submit" class="btn btn-sm" style="background:#fff1f2;color:#b5121b;border:1.5px solid #f0cfd4;">🔓 Un-finalize</button>
             {% else %}
               <button type="submit" class="btn btn-success btn-sm">✅ Finalize Title</button>
             {% endif %}

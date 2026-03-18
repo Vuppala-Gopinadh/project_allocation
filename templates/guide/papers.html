@@ -23,13 +23,13 @@
 
   {% if s1_papers %}
   <div style="margin-bottom:8px;display:flex;align-items:center;gap:10px;">
-    <div style="width:36px;height:36px;border-radius:10px;background:#ede9fe;display:flex;align-items:center;justify-content:center;font-size:18px;">1️⃣</div>
+    <div style="width:36px;height:36px;border-radius:10px;background:#fdecee;display:flex;align-items:center;justify-content:center;font-size:18px;">1️⃣</div>
     <div style="font-size:18px;font-weight:800;letter-spacing:-0.02em;">Stage 1 Publications</div>
     <span class="badge badge-purple">{{ s1_papers|length }}</span>
   </div>
   <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:28px;">
     {% for p in s1_papers %}
-    <div class="card" style="border-left:4px solid #7c3aed;">
+    <div class="card" style="border-left:4px solid #b5121b;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
         <div style="flex:1;min-width:280px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
@@ -37,9 +37,9 @@
             <span style="font-size:12px;color:#aaa;">{{ p.submitted_at[:16] if p.submitted_at else '' }}</span>
           </div>
           <!-- Citation Format -->
-          <div style="background:#faf5ff;border:1.5px solid #ddd6fe;border-radius:10px;padding:14px 16px;margin-bottom:10px;">
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#7c3aed;margin-bottom:6px;">Publication Citation</div>
-            <div style="font-size:13px;font-weight:700;color:#1e1b4b;line-height:1.8;font-style:italic;">
+          <div style="background:#fff5f6;border:1.5px solid #f0d2d6;border-radius:10px;padding:14px 16px;margin-bottom:10px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#b5121b;margin-bottom:6px;">Publication Citation</div>
+            <div style="font-size:13px;font-weight:700;color:#4c1d23;line-height:1.8;font-style:italic;">
               PUBLISHED PAPER ENTITLED "{{ p.paper_title|upper }}" IN {{ p.journal_name|upper }} VOLUME {{ p.volume_no }}, ISSUE {{ p.issue }}, {{ p.timeline|upper }}, E ISSN {{ p.e_issn }}
             </div>
           </div>
@@ -50,7 +50,7 @@
         </div>
         <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
           {% if p.pdf_filename %}
-          <a href="/view-paper/{{ p.pdf_filename }}" target="_blank" class="btn btn-sm" style="background:#ede9fe;color:#7c3aed;">
+          <a href="/view-paper/{{ p.pdf_filename }}" target="_blank" class="btn btn-sm" style="background:#fdecee;color:#b5121b;">
             📄 View PDF
           </a>
           {% else %}
@@ -90,22 +90,22 @@
   <!-- Stage 2 -->
   {% if s2_papers %}
   <div style="margin-bottom:8px;display:flex;align-items:center;gap:10px;">
-    <div style="width:36px;height:36px;border-radius:10px;background:#dcfce7;display:flex;align-items:center;justify-content:center;font-size:18px;">2️⃣</div>
+    <div style="width:36px;height:36px;border-radius:10px;background:#fff1f2;display:flex;align-items:center;justify-content:center;font-size:18px;">2️⃣</div>
     <div style="font-size:18px;font-weight:800;letter-spacing:-0.02em;">Stage 2 Publications</div>
     <span class="badge badge-green">{{ s2_papers|length }}</span>
   </div>
   <div style="display:flex;flex-direction:column;gap:12px;">
     {% for p in s2_papers %}
-    <div class="card" style="border-left:4px solid #059669;">
+    <div class="card" style="border-left:4px solid #b5121b;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
         <div style="flex:1;min-width:280px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
             <span class="badge badge-green">Stage 2</span>
             <span style="font-size:12px;color:#aaa;">{{ p.submitted_at[:16] if p.submitted_at else '' }}</span>
           </div>
-          <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:14px 16px;margin-bottom:10px;">
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#059669;margin-bottom:6px;">Publication Citation</div>
-            <div style="font-size:13px;font-weight:700;color:#052e16;line-height:1.8;font-style:italic;">
+          <div style="background:#fff5f6;border:1.5px solid #f0d2d6;border-radius:10px;padding:14px 16px;margin-bottom:10px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#b5121b;margin-bottom:6px;">Publication Citation</div>
+            <div style="font-size:13px;font-weight:700;color:#4c1d23;line-height:1.8;font-style:italic;">
               PUBLISHED PAPER ENTITLED "{{ p.paper_title|upper }}" IN {{ p.journal_name|upper }} VOLUME {{ p.volume_no }}, ISSUE {{ p.issue }}, {{ p.timeline|upper }}, E ISSN {{ p.e_issn }}
             </div>
           </div>
