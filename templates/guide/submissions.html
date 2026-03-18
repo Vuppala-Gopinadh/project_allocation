@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Submissions — Guide{% endblock %}
+{% block content %}
+<div class="page fade-in">
+  <div class="page-header">
+    <h1>Group Submissions</h1>
+    <p>Project titles submitted by your assigned groups</p>
+  </div>
+
+  {% if not groups %}
+  <div class="card">
+    <div class="empty">
+      <div class="empty-icon">📄</div>
+      <h3>No Submissions Yet</h3>
+      <p>Your assigned groups haven't selected project titles yet.</p>
+    </div>
+  </div>
+  {% else %}
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    {% for g in groups %}
+    <div class="card" style="border-left:4px solid {% if g.title_finalized %}#059669{% else %}#d97706{% endif %};">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span style="font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;">GROUP {{ loop.index }}</span>
+            {% if g.title_finalized %}
+              <span class="badge badge-green">✅ Finalized by Coordinator</span>
+            {% else %}
+              <span class="badge badge-orange">⏳ Awaiting Coordinator Approval</span>
+            {% endif %}
+          </div>
+          <div style="font-size:19px;font-weight:800;letter-spacing:-0.02em;color:#111;margin-bottom:6px;">
+            {{ g.project_title }}
+          </div>
+          <div class="text-muted">
+            Team Lead: <strong>{{ g.lead_name }}</strong> ({{ g.lead_roll }}) &middot; {{ g.member_count }} members
+          </div>
+        </div>
+        <div style="font-size:12px;color:#aaa;">{{ g.created_at[:10] if g.created_at else '' }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

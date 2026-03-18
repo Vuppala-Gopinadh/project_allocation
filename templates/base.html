@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Project Allocation{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ─── RESET ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: #f7f7f5; color: #111; min-height: 100vh; }
+
+  /* ─── VARIABLES ─── */
+  :root {
+    --coord: #7c3aed;
+    --guide: #0891b2;
+    --student: #059669;
+    --danger: #dc2626;
+    --warning: #d97706;
+    --border: #e8e8e4;
+    --surface: #ffffff;
+    --muted: #6b7280;
+    --radius: 12px;
+    --shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  }
+
+  /* ─── TOPBAR ─── */
+  .topbar {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+  }
+  .topbar-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .topbar-brand-text strong { font-size: 15px; font-weight: 700; display: block; }
+  .topbar-brand-text span { font-size: 12px; color: var(--muted); }
+  .topbar-nav { display: flex; align-items: center; gap: 4px; }
+  .topbar-nav a {
+    padding: 8px 14px; border-radius: 8px; text-decoration: none;
+    font-size: 14px; font-weight: 500; color: var(--muted);
+    transition: all 0.18s;
+  }
+  .topbar-nav a:hover { background: #f5f5f3; color: #111; }
+  .topbar-nav a.active { background: #f5f5f3; color: #111; font-weight: 600; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .user-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 12px; background: #f5f5f3; border-radius: 20px;
+    font-size: 13px; font-weight: 600;
+  }
+
+  /* ─── LAYOUT ─── */
+  .page { max-width: 1200px; margin: 0 auto; padding: 36px 24px; }
+  .page-header { margin-bottom: 28px; }
+  .page-header h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; }
+  .page-header p { color: var(--muted); margin-top: 4px; font-size: 15px; }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+  }
+  .card-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px;
+  }
+  .card-title { font-size: 16px; font-weight: 700; }
+
+  /* ─── STATS GRID ─── */
+  .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+    display: flex; align-items: center; gap: 16px;
+    box-shadow: var(--shadow);
+  }
+  .stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .stat-val { font-size: 30px; font-weight: 800; letter-spacing: -0.04em; line-height: 1; }
+  .stat-label { font-size: 13px; color: var(--muted); margin-top: 3px; font-weight: 500; }
+
+  /* ─── GRID ─── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif;
+    font-weight: 600; cursor: pointer; text-decoration: none;
+    transition: all 0.18s; font-size: 14px; padding: 9px 18px;
+    line-height: 1; white-space: nowrap;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary { background: #111; color: #fff; }
+  .btn-secondary { background: #f0f0ee; color: #111; }
+  .btn-danger { background: #fee2e2; color: var(--danger); }
+  .btn-success { background: #dcfce7; color: var(--student); }
+  .btn-outline { background: transparent; color: #111; border: 1.5px solid var(--border); }
+  .btn-sm { padding: 6px 14px; font-size: 13px; }
+  .btn-lg { padding: 12px 28px; font-size: 16px; }
+  .btn-coord { background: var(--coord); color: #fff; }
+  .btn-guide { background: var(--guide); color: #fff; }
+  .btn-student { background: var(--student); color: #fff; }
+
+  /* ─── FORMS ─── */
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 13px; font-weight: 600; color: #555; }
+  .form-control {
+    border: 1.5px solid #e5e5e5; border-radius: 8px; padding: 10px 14px;
+    font-size: 14px; font-family: 'DM Sans', sans-serif;
+    outline: none; transition: border 0.18s; background: #fafafa; width: 100%;
+    color: #111;
+  }
+  .form-control:focus { border-color: #111; background: #fff; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+  /* ─── TABLE ─── */
+  .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; background: var(--surface); }
+  thead tr { background: #fafaf8; }
+  th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
+  td { padding: 13px 16px; font-size: 14px; border-bottom: 1px solid #f5f5f3; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafaf8; }
+
+  /* ─── BADGES ─── */
+  .badge {
+    display: inline-flex; align-items: center; padding: 3px 10px;
+    border-radius: 20px; font-size: 12px; font-weight: 600;
+  }
+  .badge-green { background: #dcfce7; color: #15803d; }
+  .badge-blue { background: #dbeafe; color: #1d4ed8; }
+  .badge-purple { background: #ede9fe; color: #7c3aed; }
+  .badge-orange { background: #ffedd5; color: #c2410c; }
+  .badge-gray { background: #f3f4f6; color: #6b7280; }
+  .badge-red { background: #fee2e2; color: #dc2626; }
+
+  /* ─── ALERTS ─── */
+  .alert { padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; margin-bottom: 16px; }
+  .alert-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+  .alert-error { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+  .alert-warning { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+  .alert-info { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+
+  /* ─── MODAL ─── */
+  .modal-backdrop {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4); z-index: 500;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 16px; padding: 32px;
+    width: 100%; max-width: 520px; max-height: 90vh;
+    overflow-y: auto; box-shadow: var(--shadow-lg);
+    animation: fadeUp 0.25s ease;
+  }
+  .modal-header {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 24px;
+  }
+  .modal-title { font-size: 20px; font-weight: 700; }
+  .modal-close {
+    background: none; border: none; font-size: 24px;
+    cursor: pointer; color: var(--muted); line-height: 1;
+  }
+
+  /* ─── EMPTY STATE ─── */
+  .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty-icon { font-size: 52px; margin-bottom: 12px; }
+  .empty h3 { font-size: 18px; font-weight: 700; color: #444; margin-bottom: 6px; }
+  .empty p { font-size: 14px; }
+
+  /* ─── MEMBER PILL ─── */
+  .member-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 500;
+    background: #f5f5f3; color: #444;
+  }
+  .member-pill.lead { background: #ede9fe; color: #7c3aed; font-weight: 700; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeIn 0.3s ease; }
+
+  /* ─── DIVIDER ─── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  /* ─── UTILITIES ─── */
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .gap-8 { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .gap-16 { gap: 16px; }
+  .mt-8 { margin-top: 8px; }
+  .mt-12 { margin-top: 12px; }
+  .mt-16 { margin-top: 16px; }
+  .mb-16 { margin-bottom: 16px; }
+  .mb-20 { margin-bottom: 20px; }
+  .text-muted { color: var(--muted); font-size: 13px; }
+  .text-sm { font-size: 13px; }
+  .font-bold { font-weight: 700; }
+  .mono { font-family: 'DM Mono', monospace; }
+  .w-full { width: 100%; }
+  .text-center { text-align: center; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .stats-grid { grid-template-columns: repeat(2,1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
+    .topbar-nav { display: none; }
+    .page { padding: 20px 16px; }
+  }
+  @media (max-width: 480px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+{% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{% if session.role %}
+<header class="topbar">
+  <a class="topbar-brand" href="{% if session.role == 'coordinator' %}{{ url_for('coord_dashboard') }}{% elif session.role == 'guide' %}{{ url_for('guide_dashboard') }}{% else %}{{ url_for('student_dashboard') }}{% endif %}">
+    <div class="topbar-icon" style="background:{% if session.role == 'coordinator' %}#ede9fe{% elif session.role == 'guide' %}#e0f2fe{% else %}#dcfce7{% endif %}">
+      {% if session.role == 'coordinator' %}📋{% elif session.role == 'guide' %}🎓{% else %}🎒{% endif %}
+    </div>
+    <div class="topbar-brand-text">
+      <strong>Project Allocator</strong>
+      <span>{{ session.role|capitalize }} Portal</span>
+    </div>
+  </a>
+
+  <nav class="topbar-nav">
+    {% if session.role == 'coordinator' %}
+      <a href="{{ url_for('coord_dashboard') }}" class="{% if request.endpoint == 'coord_dashboard' %}active{% endif %}">Dashboard</a>
+      <a href="{{ url_for('coord_students') }}" class="{% if request.endpoint == 'coord_students' %}active{% endif %}">Students</a>
+      <a href="{{ url_for('coord_guides') }}" class="{% if request.endpoint == 'coord_guides' %}active{% endif %}">Guides</a>
+      <a href="{{ url_for('coord_groups') }}" class="{% if request.endpoint == 'coord_groups' %}active{% endif %}">Groups</a>
+      <a href="{{ url_for('coord_allocations') }}" class="{% if request.endpoint == 'coord_allocations' %}active{% endif %}">Allocations</a>
+      <a href="{{ url_for('coord_marks') }}" class="{% if request.endpoint == 'coord_marks' %}active{% endif %}">Marks</a>
+      <a href="{{ url_for('coord_papers') }}" class="{% if request.endpoint == 'coord_papers' %}active{% endif %}" style="{% if request.endpoint == 'coord_papers' %}{% else %}color:#7c3aed;font-weight:600;{% endif %}">📰 Papers</a>
+    {% elif session.role == 'guide' %}
+      <a href="{{ url_for('guide_dashboard') }}" class="{% if request.endpoint == 'guide_dashboard' %}active{% endif %}">Dashboard</a>
+      <a href="{{ url_for('guide_groups') }}" class="{% if request.endpoint == 'guide_groups' %}active{% endif %}">My Groups</a>
+      <a href="{{ url_for('guide_titles') }}" class="{% if request.endpoint == 'guide_titles' %}active{% endif %}">Project Titles</a>
+      <a href="{{ url_for('guide_submissions') }}" class="{% if request.endpoint == 'guide_submissions' %}active{% endif %}">Submissions</a>
+      <a href="{{ url_for('guide_papers') }}" class="{% if request.endpoint == 'guide_papers' %}active{% endif %}" style="{% if request.endpoint == 'guide_papers' %}{% else %}color:#0891b2;font-weight:600;{% endif %}">📰 Papers</a>
+    {% elif session.role == 'student' %}
+      <a href="{{ url_for('student_dashboard') }}" class="{% if request.endpoint == 'student_dashboard' %}active{% endif %}">My Group</a>
+    {% endif %}
+  </nav>
+
+  <div class="topbar-right">
+    <div class="user-pill">
+      {% if session.role == 'coordinator' %}📋{% elif session.role == 'guide' %}🎓{% else %}🎒{% endif %}
+      {{ session.user_name }}
+    </div>
+    <a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm">Sign Out</a>
+  </div>
+</header>
+{% endif %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="max-width:1200px;margin:16px auto;padding:0 24px;">
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ 'success' if cat == 'success' else 'error' if cat == 'error' else 'warning' if cat == 'warning' else 'info' }}">
+          {{ msg }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<script>
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  document.querySelectorAll('.modal-backdrop').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+  });
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

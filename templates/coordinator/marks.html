@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+{% block title %}Marks Allocation - Coordinator{% endblock %}
+
+{% block extra_css %}
+<style>
+  .marks-input {
+    max-width: 92px;
+    text-align: center;
+    padding: 8px 10px;
+  }
+  .marks-table th { text-align: center; }
+  .marks-table th:nth-child(4) { text-align: left; }
+  .marks-table th:last-child { text-align: left; }
+  .marks-table td { vertical-align: middle; }
+  .marks-table td:nth-child(4) { font-weight: 600; }
+  .muted { color: var(--muted); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page fade-in">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:18px;">
+    <div class="page-header" style="margin-bottom:0;">
+      <h1>Marks Allocation</h1>
+      <p class="muted">
+        Groups: {{ groups|length }} | Students: {{ student_count }} | Date: {{ today }}
+      </p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <button type="button" class="btn btn-secondary" onclick="openModal('addColumnModal')">Add Column</button>
+      <a class="btn btn-outline" href="{{ url_for('coord_marks_export') }}?stage={{ stage }}">Export Word</a>
+      {% if groups %}
+        <button type="submit" form="marksForm" class="btn btn-primary">Save Marks</button>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;">
+      <div style="display:flex;gap:8px;align-items:center;flex:1;">
+        <span style="font-weight:600;">Class:</span>
+        <input class="form-control" style="max-width:360px;border:1px solid #e5e5e5;background:#fff;" id="className" value="{{ template.class_name }}">
+      </div>
+      <div style="display:flex;gap:18px;font-weight:600;">
+        <label style="display:flex;align-items:center;gap:6px;">
+          <input type="radio" name="stageSelect" value="1" {% if stage != 2 %}checked{% endif %}>
+          Presentation 1
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;">
+          <input type="radio" name="stageSelect" value="2" {% if stage == 2 %}checked{% endif %}>
+          Presentation 2
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-header">
+      <div class="card-title">Marks Columns</div>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="openModal('addColumnModal')">Add Column</button>
+    </div>
+    {% if columns %}
+      <div class="table-wrap" style="border:none;border-radius:0;">
+        <table>
+          <thead>
+            <tr>
+              <th style="min-width:200px;">Column Name</th>
+              <th style="min-width:120px;">Max Marks</th>
+              <th style="min-width:160px;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for col in columns %}
+              <tr>
+                <td style="font-weight:600;">{{ col.name }}</td>
+                <td>{{ col.max_marks }}</td>
+                <td style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <button
+                    type="button"
+                    class="btn btn-outline btn-sm edit-col-btn"
+                    data-id="{{ col.id }}"
+                    data-name="{{ col.name }}"
+                    data-max="{{ col.max_marks }}"
+                  >Edit</button>
+                  <form method="POST" action="{{ url_for('coord_marks_delete_column') }}" onsubmit="return confirm('Delete this column and its marks?');">
+                    <input type="hidden" name="stage" value="{{ stage }}">
+                    <input type="hidden" name="column_id" value="{{ col.id }}">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty" style="padding:28px 16px;">
+        <div style="font-weight:700;margin-bottom:6px;">No columns yet</div>
+        <div class="muted">Add a column to start entering marks.</div>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if not groups %}
+    <div class="card">
+      <div class="empty">
+        <div class="empty-icon">Marks</div>
+        <h3>No grouped students found</h3>
+        <p>Marks allocation will show once students form groups.</p>
+      </div>
+    </div>
+  {% else %}
+    <form id="marksForm" method="POST" action="{{ url_for('coord_marks_save') }}">
+      <input type="hidden" name="stage" value="{{ stage }}">
+      <div class="card" style="padding:0;">
+        <div class="table-wrap" style="border:none;border-radius:0;">
+          <table class="marks-table">
+            <thead>
+              <tr>
+                <th style="width:90px;">Group No.</th>
+                <th style="width:80px;">Sr. No.</th>
+                <th style="width:150px;">PRN</th>
+                <th style="min-width:280px;">Name of Student</th>
+                {% for col in columns %}
+                  <th style="min-width:160px;">{{ col.name }} ({{ col.max_marks }})</th>
+                {% endfor %}
+                <th style="min-width:140px;">Total ({{ total_max }})</th>
+                <th style="min-width:220px;">Name and Sign of Guide</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% set ns = namespace(sr=1) %}
+              {% for grp in groups %}
+                {% for mem in grp.members %}
+                  <tr>
+                    {% if loop.first %}
+                      <td rowspan="{{ grp.members|length }}" style="font-weight:800;text-align:center;background:#fafaf8;">
+                        {{ grp.group_no }}
+                      </td>
+                    {% endif %}
+
+                    <td style="text-align:center;">{{ ns.sr }}</td>
+                    <td class="mono" style="font-size:13px;">{{ mem.prn }}</td>
+                    <td>
+                      {{ mem.name }}
+                      {% if mem.is_lead %}
+                        <span class="badge badge-purple" style="margin-left:6px;">Team Lead</span>
+                      {% endif %}
+                    </td>
+
+                    {% for col in columns %}
+                      {% set key = mem.id ~ ':' ~ col.id %}
+                      {% set val = marks.get(key) %}
+                      <td style="text-align:center;">
+                        <input
+                          class="form-control marks-input marks-field"
+                          type="number"
+                          inputmode="decimal"
+                          step="0.5"
+                          min="0"
+                          max="{{ col.max_marks }}"
+                          name="m_{{ mem.id }}_{{ col.id }}"
+                          value="{{ '' if val is none else val }}"
+                          placeholder="-"
+                        >
+                      </td>
+                    {% endfor %}
+
+                    <td class="row-total" style="text-align:center;font-weight:900;">
+                      {% if columns %}
+                        {{ '%.1f'|format(totals.get(mem.id, 0)) if totals.get(mem.id) is not none else 0 }}
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
+
+                    {% if loop.first %}
+                      <td rowspan="{{ grp.members|length }}" style="font-weight:800;">
+                        {{ grp.guide_name or 'N/A' }}
+                      </td>
+                    {% endif %}
+                  </tr>
+                  {% set ns.sr = ns.sr + 1 %}
+                {% endfor %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </form>
+  {% endif %}
+</div>
+
+<div class="modal-backdrop" id="addColumnModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Column</div>
+      <button class="modal-close" onclick="closeModal('addColumnModal')">X</button>
+    </div>
+    <form method="POST" action="{{ url_for('coord_marks_add_column') }}">
+      <input type="hidden" name="stage" value="{{ stage }}">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="form-group">
+          <label class="form-label">Column Name *</label>
+          <input class="form-control" name="name" placeholder="e.g., Presentation" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Max Marks *</label>
+          <input class="form-control" type="number" name="max_marks" min="0" step="1" placeholder="e.g., 20" required>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button type="button" onclick="closeModal('addColumnModal')" class="btn btn-secondary w-full" style="justify-content:center;">Cancel</button>
+          <button type="submit" class="btn btn-primary w-full" style="justify-content:center;">Add</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="editColumnModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Edit Column</div>
+      <button class="modal-close" onclick="closeModal('editColumnModal')">X</button>
+    </div>
+    <form method="POST" action="{{ url_for('coord_marks_update_column') }}">
+      <input type="hidden" name="stage" value="{{ stage }}">
+      <input type="hidden" name="column_id" id="editColumnId">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="form-group">
+          <label class="form-label">Column Name *</label>
+          <input class="form-control" name="name" id="editColumnName" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Max Marks *</label>
+          <input class="form-control" type="number" name="max_marks" id="editColumnMax" min="0" step="1" required>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button type="button" onclick="closeModal('editColumnModal')" class="btn btn-secondary w-full" style="justify-content:center;">Cancel</button>
+          <button type="submit" class="btn btn-primary w-full" style="justify-content:center;">Update</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function calcRowTotal(tr) {
+    let total = 0;
+    tr.querySelectorAll('input.marks-field').forEach(inp => {
+      const v = (inp.value || '').trim();
+      if (v === '') return;
+      const n = Number(v);
+      if (Number.isFinite(n)) total += n;
+    });
+    const totalCell = tr.querySelector('.row-total');
+    if (totalCell) totalCell.textContent = total ? total.toFixed(1).replace(/\.0$/, '') : '0';
+  }
+
+  document.querySelectorAll('table.marks-table tbody tr').forEach(tr => calcRowTotal(tr));
+  document.querySelectorAll('input.marks-field').forEach(inp => {
+    inp.addEventListener('input', e => calcRowTotal(e.target.closest('tr')));
+  });
+
+  document.querySelectorAll('.edit-col-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('editColumnId').value = btn.dataset.id;
+      document.getElementById('editColumnName').value = btn.dataset.name;
+      document.getElementById('editColumnMax').value = btn.dataset.max;
+      openModal('editColumnModal');
+    });
+  });
+
+  const exportLink = document.querySelector('a[href*="coord_marks_export"]');
+  const classInput = document.getElementById('className');
+  document.querySelectorAll('input[name="stageSelect"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const stageVal = document.querySelector('input[name="stageSelect"]:checked').value;
+      window.location = "{{ url_for('coord_marks') }}" + "?stage=" + stageVal;
+    });
+  });
+
+  function updateExportLink() {
+    if (!exportLink) return;
+    const selected = document.querySelector('input[name=\"stageSelect\"]:checked');
+    const stageVal = selected ? selected.value : '1';
+    const classVal = classInput ? classInput.value.trim() : '';
+    let url = "{{ url_for('coord_marks_export') }}" + "?stage=" + stageVal;
+    if (classVal) {
+      url += "&class_name=" + encodeURIComponent(classVal);
+    }
+    exportLink.href = url;
+  }
+
+  updateExportLink();
+  if (classInput) {
+    classInput.addEventListener('input', updateExportLink);
+  }
+</script>
+{% endblock %}
+
