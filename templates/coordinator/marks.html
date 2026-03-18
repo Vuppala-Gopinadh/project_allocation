@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block title %}Marks Allocation - Coordinator{% endblock %}
 
 {% block extra_css %}
@@ -134,7 +134,7 @@
                 {% for mem in grp.members %}
                   <tr>
                     {% if loop.first %}
-                      <td rowspan="{{ grp.members|length }}" style="font-weight:800;text-align:center;background:#fafaf8;">
+                      <td rowspan="{{ grp.members|length }}" style="font-weight:800;text-align:center;background:#fff9fa;">
                         {{ grp.group_no }}
                       </td>
                     {% endif %}
@@ -300,4 +300,5 @@
   }
 </script>
 {% endblock %}
+
 

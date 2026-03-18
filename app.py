@@ -585,7 +585,7 @@ def finalize_title():
         conn.close()
         return redirect(url_for('coord_groups'))
     if not grp['project_title']:
-        flash('Cannot finalize — the group has not submitted a project title yet.', 'error')
+        flash('Cannot finalize - the group has not submitted a project title yet.', 'error')
         conn.close()
         return redirect(url_for('coord_groups'))
     new_status = 0 if grp['title_finalized'] else 1
@@ -593,7 +593,7 @@ def finalize_title():
     conn.commit()
     conn.close()
     if new_status:
-        flash('✅ Project title finalized successfully.', 'success')
+        flash('Project title finalized successfully.', 'success')
     else:
         flash('Project title un-finalized. Students can now update it.', 'warning')
     return redirect(url_for('coord_groups'))
@@ -1455,7 +1455,7 @@ def form_group():
         conn.execute("INSERT INTO group_member (group_id, student_id) VALUES (?,?)", (group_id, mid))
     conn.commit()
     conn.close()
-    flash('Group formed successfully! 🎉', 'success')
+    flash('Group formed successfully!', 'success')
     return redirect(url_for('student_dashboard'))
 
 @app.route('/student/update-title', methods=['POST'])
@@ -1493,7 +1493,7 @@ def update_title():
     conn.execute("UPDATE project_group SET project_title=? WHERE id=?", (final_title, grp['id']))
     conn.commit()
     conn.close()
-    flash('✅ Project title updated successfully.', 'success')
+    flash('Project title updated successfully.', 'success')
     return redirect(url_for('student_dashboard'))
 
 # ─── STUDENT: SUBMIT PAPER PUBLICATION ──────────────────────────────────────
@@ -1574,7 +1574,7 @@ def submit_paper():
     """, (group_id, stage, paper_title, journal_name, volume_no, issue, timeline, e_issn, pdf_filename))
     conn.commit()
     conn.close()
-    flash(f'✅ Stage {stage} paper publication submitted successfully!', 'success')
+    flash(f'Stage {stage} paper publication submitted successfully!', 'success')
     return redirect(url_for('student_dashboard'))
 
 # ─── RUN ────────────────────────────────────────────────────────────────────
@@ -1585,6 +1585,6 @@ if __name__ == '__main__':
     print("="*55)
     print("  URL: http://localhost:5500")
     print("  Coordinator: coordinator@college.edu / coord123")
-    print("  Students: Email (login) / PRN (password) — after upload")
+    print("  Students: Email (login) / PRN (password) - after upload")
     print("="*55 + "\n")
     app.run(debug=True, port=5500)

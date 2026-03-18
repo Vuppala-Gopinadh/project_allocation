@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block title %}Groups — Coordinator{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Groups  Coordinator{% endblock %}
 {% block content %}
 <div class="page fade-in">
   <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
@@ -16,7 +16,7 @@
   {% if not groups %}
   <div class="card">
     <div class="empty">
-      <div class="empty-icon">👥</div>
+      <div class="empty-icon"></div>
       <h3>No Groups Yet</h3>
       <p>Students will form groups from their portal.</p>
     </div>
@@ -29,16 +29,16 @@
       All ({{ groups|length }})
     </button>
     <button onclick="filterGroups('pending', this)"
-      style="padding:7px 16px;border-radius:20px;border:1.5px solid #eee;background:#fafaf8;color:#888;font-size:13px;font-weight:600;cursor:pointer;">
-      ⏳ Pending Title
+      style="padding:7px 16px;border-radius:20px;border:1.5px solid #eee;background:#fff9fa;color:#888;font-size:13px;font-weight:600;cursor:pointer;">
+       Pending Title
     </button>
     <button onclick="filterGroups('finalized', this)"
-      style="padding:7px 16px;border-radius:20px;border:1.5px solid #eee;background:#fafaf8;color:#888;font-size:13px;font-weight:600;cursor:pointer;">
-      ✅ Finalized
+      style="padding:7px 16px;border-radius:20px;border:1.5px solid #eee;background:#fff9fa;color:#888;font-size:13px;font-weight:600;cursor:pointer;">
+       Finalized
     </button>
     <button onclick="filterGroups('noguide', this)"
-      style="padding:7px 16px;border-radius:20px;border:1.5px solid #eee;background:#fafaf8;color:#888;font-size:13px;font-weight:600;cursor:pointer;">
-      🔴 No Guide
+      style="padding:7px 16px;border-radius:20px;border:1.5px solid #eee;background:#fff9fa;color:#888;font-size:13px;font-weight:600;cursor:pointer;">
+       No Guide
     </button>
   </div>
 
@@ -56,9 +56,9 @@
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
             <span style="font-size:12px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;">GROUP {{ loop.index }}</span>
             {% if grp.title_finalized %}
-              <span class="badge badge-green">✅ Title Finalized</span>
+              <span class="badge badge-green"> Title Finalized</span>
             {% elif grp.project_title %}
-              <span class="badge badge-orange">⏳ Awaiting Finalization</span>
+              <span class="badge badge-orange"> Awaiting Finalization</span>
             {% else %}
               <span class="badge badge-gray">No Title Yet</span>
             {% endif %}
@@ -67,8 +67,8 @@
             {% else %}
               <span class="badge" style="background:#fee2e2;color:#dc2626;">No Guide</span>
             {% endif %}
-            {% if 1 in paper_stages %}<span class="badge badge-purple">📰 S1 Paper</span>{% endif %}
-            {% if 2 in paper_stages %}<span class="badge badge-green">📰 S2 Paper</span>{% endif %}
+            {% if 1 in paper_stages %}<span class="badge badge-purple"> S1 Paper</span>{% endif %}
+            {% if 2 in paper_stages %}<span class="badge badge-green"> S2 Paper</span>{% endif %}
           </div>
 
           <div style="font-size:18px;font-weight:800;letter-spacing:-0.02em;margin-bottom:10px;color:{% if grp.project_title %}#111{% else %}#ccc{% endif %};">
@@ -78,11 +78,11 @@
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
             {% for m in members %}
             <span class="member-pill {% if m.prn == grp.lead_roll %}lead{% endif %}">
-              {% if m.prn == grp.lead_roll %}👑{% endif %} {{ m.name }}
+              {% if m.prn == grp.lead_roll %}{% endif %} {{ m.name }}
             </span>
             {% endfor %}
           </div>
-          <div class="text-muted">Team Lead: <strong>{{ grp.lead_name or '—' }}</strong> · {{ members|length }} members</div>
+          <div class="text-muted">Team Lead: <strong>{{ grp.lead_name or '' }}</strong>  {{ members|length }} members</div>
         </div>
 
         <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
@@ -91,9 +91,9 @@
                 onsubmit="return confirm('{% if grp.title_finalized %}Un-finalize this title?{% else %}Finalize this project title?{% endif %}')">
             <input type="hidden" name="group_id" value="{{ grp.id }}">
             {% if grp.title_finalized %}
-              <button type="submit" class="btn btn-sm" style="background:#fff7ed;color:#d97706;border:1.5px solid #fed7aa;">🔓 Un-finalize</button>
+              <button type="submit" class="btn btn-sm" style="background:#fff7ed;color:#c8102e;border:1.5px solid #f4c2ca;"> Un-finalize</button>
             {% else %}
-              <button type="submit" class="btn btn-success btn-sm">✅ Finalize Title</button>
+              <button type="submit" class="btn btn-success btn-sm"> Finalize Title</button>
             {% endif %}
           </form>
           {% endif %}
@@ -113,16 +113,16 @@
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title">Allocate Guide</div>
-      <button class="modal-close" onclick="closeModal('allocateModal')">×</button>
+      <button class="modal-close" onclick="closeModal('allocateModal')"></button>
     </div>
     <form method="POST" action="/coordinator/groups/allocate">
       <input type="hidden" name="group_id" id="allocGroupId">
       <div style="display:flex;flex-direction:column;gap:14px;">
-        <div style="padding:12px 14px;background:#f8f8f6;border-radius:8px;font-size:14px;" id="allocGroupInfo"></div>
+        <div style="padding:12px 14px;background:#fff7f8;border-radius:8px;font-size:14px;" id="allocGroupInfo"></div>
         <div class="form-group">
           <label class="form-label">Select Guide</label>
           <select class="form-control" name="guide_id" id="allocGuideSelect">
-            <option value="">— Remove guide allocation —</option>
+            <option value=""> Remove guide allocation </option>
             {% for g in guides %}
             <option value="{{ g.id }}">{{ g.name }}{% if g.department %} ({{ g.department }}){% endif %}</option>
             {% endfor %}
@@ -146,7 +146,7 @@ function openAllocate(groupId, currentGuideId, projectTitle) {
 }
 function filterGroups(type, btn) {
   document.querySelectorAll('button[onclick^="filterGroups"]').forEach(b => {
-    b.style.background = '#fafaf8'; b.style.color = '#888'; b.style.borderColor = '#eee';
+    b.style.background = '#fff9fa'; b.style.color = '#888'; b.style.borderColor = '#eee';
   });
   btn.style.background = '#111'; btn.style.color = '#fff'; btn.style.borderColor = '#111';
   document.querySelectorAll('.group-card').forEach(card => {
@@ -162,3 +162,5 @@ function filterGroups(type, btn) {
 }
 </script>
 {% endblock %}
+
+

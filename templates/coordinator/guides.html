@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block title %}Guides — Coordinator{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Guides  Coordinator{% endblock %}
 {% block content %}
 <div class="page fade-in">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;">
@@ -13,7 +13,7 @@
   {% if not guides %}
   <div class="card">
     <div class="empty">
-      <div class="empty-icon">🎓</div>
+      <div class="empty-icon"></div>
       <h3>No Guides Added</h3>
       <p>Add guides so students can see project title suggestions and be assigned to groups.</p>
       <button class="btn btn-primary" onclick="openModal('addGuideModal')" style="margin-top:16px;">+ Add First Guide</button>
@@ -24,7 +24,7 @@
     {% for g in guides %}
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
-        <div style="width:48px;height:48px;border-radius:14px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;font-size:24px;">🎓</div>
+        <div style="width:48px;height:48px;border-radius:14px;background:#fdecef;display:flex;align-items:center;justify-content:center;font-size:24px;"></div>
         <form method="POST" action="/coordinator/guides/delete/{{ g.id }}" onsubmit="return confirm('Remove {{ g.name }}?')">
           <button type="submit" class="btn btn-danger btn-sm">Remove</button>
         </form>
@@ -37,9 +37,9 @@
         <span class="badge badge-green">{{ g.group_count }} group(s)</span>
         <span class="badge badge-gray">{{ g.title_count }} title(s)</span>
       </div>
-      <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f0f0ee;">
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f9f0f2;">
         <div class="text-muted" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Added</div>
-        <div style="font-size:13px;margin-top:2px;">{{ g.created_at[:10] if g.created_at else '—' }}</div>
+        <div style="font-size:13px;margin-top:2px;">{{ g.created_at[:10] if g.created_at else '' }}</div>
       </div>
     </div>
     {% endfor %}
@@ -52,7 +52,7 @@
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title">Add New Guide</div>
-      <button class="modal-close" onclick="closeModal('addGuideModal')">×</button>
+      <button class="modal-close" onclick="closeModal('addGuideModal')"></button>
     </div>
     <form method="POST" action="/coordinator/guides/add">
       <div style="display:flex;flex-direction:column;gap:14px;">
@@ -87,3 +87,5 @@
   </div>
 </div>
 {% endblock %}
+
+

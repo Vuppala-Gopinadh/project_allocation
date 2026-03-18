@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block title %}Project Titles — Guide{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Project Titles  Guide{% endblock %}
 {% block content %}
 <div class="page fade-in">
   <div class="page-header">
@@ -21,7 +21,7 @@
       </div>
 
       <div class="card" style="background:#f0f9ff;border-color:#bae6fd;">
-        <div style="font-weight:700;margin-bottom:8px;font-size:14px;color:#0891b2;">💡 Tips</div>
+        <div style="font-weight:700;margin-bottom:8px;font-size:14px;color:#c8102e;"> Tips</div>
         <ul style="font-size:13px;color:#555;line-height:2;padding-left:18px;">
           <li>Be descriptive and specific</li>
           <li>Students will see your name with each title</li>
@@ -37,14 +37,14 @@
       </div>
       {% if not titles %}
       <div class="empty" style="padding:40px 0;">
-        <div class="empty-icon">📋</div>
+        <div class="empty-icon"></div>
         <h3>No Titles Yet</h3>
         <p>Add project titles for students to choose from.</p>
       </div>
       {% else %}
       <div style="display:flex;flex-direction:column;gap:8px;">
         {% for t in titles %}
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px;background:#f8f8f6;border-radius:10px;border:1px solid #f0f0ee;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px;background:#fff7f8;border-radius:10px;border:1px solid #f9f0f2;">
           <div style="flex:1;">
             <div style="font-weight:600;font-size:14px;">{{ t.title }}</div>
             <div class="text-muted" style="font-size:12px;">Added {{ t.created_at[:10] if t.created_at else '' }}</div>
@@ -60,3 +60,5 @@
   </div>
 </div>
 {% endblock %}
+
+

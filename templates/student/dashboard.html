@@ -1,8 +1,8 @@
-{% extends "base.html" %}
-{% block title %}My Group — Student{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}My Group  Student{% endblock %}
 {% block extra_css %}
 <style>
-/* ── Hamburger sidebar layout ───────────────────────────────────────────── */
+/*  Hamburger sidebar layout  */
 .portal-wrap {
   display: flex;
   min-height: calc(100vh - 64px);
@@ -52,7 +52,7 @@
 
 .sidebar-header {
   padding: 20px 20px 12px;
-  border-bottom: 1px solid #f0f0ee;
+  border-bottom: 1px solid #f9f0f2;
 }
 .sidebar-header .student-name {
   font-size: 15px; font-weight: 800; color: #111;
@@ -89,29 +89,29 @@
   text-align: left;
   font-family: 'DM Sans', sans-serif;
 }
-.nav-item:hover { background: #f8f8f6; color: #111; }
+.nav-item:hover { background: #fff7f8; color: #111; }
 .nav-item.active {
-  background: #f0fdf4;
-  border-left-color: #059669;
-  color: #059669;
+  background: #fff5f7;
+  border-left-color: #c8102e;
+  color: #c8102e;
   font-weight: 700;
 }
 .nav-item .nav-icon {
   width: 32px; height: 32px; border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
   font-size: 16px; flex-shrink: 0;
-  background: #f5f5f3;
+  background: #fdf3f5;
   transition: background 0.18s;
 }
-.nav-item.active .nav-icon { background: #dcfce7; }
+.nav-item.active .nav-icon { background: #fdecef; }
 .nav-item .nav-badge {
   margin-left: auto;
   font-size: 11px; font-weight: 700;
   padding: 2px 8px; border-radius: 10px;
-  background: #dcfce7; color: #059669;
+  background: #fdecef; color: #c8102e;
 }
-.nav-item .nav-badge.pending { background: #ffedd5; color: #d97706; }
-.nav-item .nav-badge.done    { background: #dcfce7; color: #059669; }
+.nav-item .nav-badge.pending { background: #fff5f7; color: #c8102e; }
+.nav-item .nav-badge.done    { background: #fdecef; color: #c8102e; }
 
 /* Hamburger button */
 .hamburger-btn {
@@ -122,7 +122,7 @@
   z-index: 300;
   width: 50px; height: 50px;
   border-radius: 14px;
-  background: #059669;
+  background: #c8102e;
   border: none;
   cursor: pointer;
   box-shadow: 0 4px 16px rgba(5,150,105,0.4);
@@ -155,29 +155,29 @@
 .section-panel { display: none; }
 .section-panel.active { display: block; animation: fadeIn 0.25s ease; }
 
-/* ── FORM GROUP styles ───────────────────────────────────────────────────── */
+/*  FORM GROUP styles  */
 .student-card {
   display: flex; align-items: center; gap: 12px;
   padding: 12px; border-radius: 10px; border: 2px solid #eee;
-  background: #fafaf8; cursor: pointer; transition: all 0.18s;
+  background: #fff9fa; cursor: pointer; transition: all 0.18s;
   user-select: none;
 }
-.student-card:hover { border-color: #059669; background: #f0fdf4; }
-.student-card.selected { border-color: #059669; background: #dcfce7; }
+.student-card:hover { border-color: #c8102e; background: #fff5f7; }
+.student-card.selected { border-color: #c8102e; background: #fdecef; }
 .check-box {
   width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   font-size: 14px; background: #e5e5e5; color: #aaa; transition: all 0.18s;
 }
-.selected .check-box { background: #059669; color: #fff; }
+.selected .check-box { background: #c8102e; color: #fff; }
 .title-option {
   padding: 12px 14px; border-radius: 10px; border: 2px solid #eee;
-  background: #fafaf8; cursor: pointer; transition: all 0.18s;
+  background: #fff9fa; cursor: pointer; transition: all 0.18s;
 }
-.title-option:hover { border-color: #059669; }
-.title-option.selected { border-color: #059669; background: #dcfce7; }
+.title-option:hover { border-color: #c8102e; }
+.title-option.selected { border-color: #c8102e; background: #fdecef; }
 .finalized-banner {
-  background: linear-gradient(135deg, #059669, #047857);
+  background: linear-gradient(135deg, #c8102e, #047857);
   color: #fff; border-radius: 12px; padding: 16px 20px;
   display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
 }
@@ -185,14 +185,14 @@
 /* Stage tabs */
 .stage-tabs { display: flex; gap: 0; border-radius: 10px; overflow: hidden; border: 1.5px solid #e5e5e5; margin-bottom: 20px; }
 .stage-tab {
-  flex: 1; padding: 11px 10px; border: none; background: #fafaf8;
+  flex: 1; padding: 11px 10px; border: none; background: #fff9fa;
   font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700;
   cursor: pointer; transition: all 0.18s; color: #888; text-align: center;
 }
 .stage-tab:not(:last-child) { border-right: 1.5px solid #e5e5e5; }
 .stage-tab.active { background: #111; color: #fff; }
-.stage-tab.done { background: #dcfce7; color: #059669; }
-.stage-tab.done.active { background: #059669; color: #fff; }
+.stage-tab.done { background: #fdecef; color: #c8102e; }
+.stage-tab.done.active { background: #c8102e; color: #fff; }
 
 /* Paper form */
 .paper-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
@@ -205,16 +205,16 @@
 .pdf-upload-zone {
   border: 2px dashed #d1d5db; border-radius: 10px; padding: 20px;
   text-align: center; cursor: pointer; transition: all 0.18s;
-  background: #fafaf8; position: relative; margin-top: 12px;
+  background: #fff9fa; position: relative; margin-top: 12px;
 }
-.pdf-upload-zone:hover { border-color: #059669; background: #f0fdf4; }
+.pdf-upload-zone:hover { border-color: #c8102e; background: #fff5f7; }
 .pdf-upload-zone input[type=file] {
   position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
 }
-.pdf-upload-zone.has-file { border-color: #059669; background: #dcfce7; }
+.pdf-upload-zone.has-file { border-color: #c8102e; background: #fdecef; }
 .submitted-paper-card {
-  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-  border: 1.5px solid #86efac; border-radius: 12px; padding: 16px; margin-bottom: 12px;
+  background: linear-gradient(135deg, #fff5f7, #fdecef);
+  border: 1.5px solid #ef9aa8; border-radius: 12px; padding: 16px; margin-bottom: 12px;
 }
 .multiline-ellipsis { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; word-break: break-word; }
 .multiline-ellipsis-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; word-break: break-word; }
@@ -229,37 +229,37 @@
 {% block content %}
 <div class="portal-wrap">
 
-  <!-- ── Sidebar overlay (mobile) ─────────────────────────────────────── -->
+  <!--  Sidebar overlay (mobile)  -->
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-  <!-- ── Sidebar ─────────────────────────────────────────────────────── -->
+  <!--  Sidebar  -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="student-name">{{ student.name }}</div>
-      <div class="student-prn">{{ student.prn }}{% if student.division %} · Div {{ student.division }}{% endif %}</div>
+      <div class="student-prn">{{ student.prn }}{% if student.division %}  Div {{ student.division }}{% endif %}</div>
     </div>
 
     <div class="nav-section-label">My Group</div>
 
     {% if group %}
       <button class="nav-item active" id="nav-members" onclick="showSection('members', this)">
-        <div class="nav-icon">👥</div>
+        <div class="nav-icon"></div>
         <span>Group Members</span>
         <span class="nav-badge done">{{ members|length }}</span>
       </button>
 
       <button class="nav-item" id="nav-guide" onclick="showSection('guide', this)">
-        <div class="nav-icon">🎓</div>
+        <div class="nav-icon"></div>
         <span>Assigned Guide</span>
         {% if group.guide_name %}
-          <span class="nav-badge done">✓</span>
+          <span class="nav-badge done"></span>
         {% else %}
           <span class="nav-badge pending">Pending</span>
         {% endif %}
       </button>
 
       <button class="nav-item" id="nav-title" onclick="showSection('title', this)">
-        <div class="nav-icon">📋</div>
+        <div class="nav-icon"></div>
         <span>Project Title</span>
         {% if group.title_finalized %}
           <span class="nav-badge done">Locked</span>
@@ -273,11 +273,11 @@
       <div class="nav-section-label">Publications</div>
 
       <button class="nav-item" id="nav-paper" onclick="showSection('paper', this)">
-        <div class="nav-icon">📰</div>
+        <div class="nav-icon"></div>
         <span>Paper Publication</span>
         {% set done_count = papers|length %}
         {% if done_count == 2 %}
-          <span class="nav-badge done">Both ✓</span>
+          <span class="nav-badge done">Both </span>
         {% elif done_count == 1 %}
           <span class="nav-badge pending">1/2</span>
         {% else %}
@@ -287,38 +287,38 @@
 
     {% else %}
       <button class="nav-item active" id="nav-form" onclick="showSection('form', this)">
-        <div class="nav-icon">➕</div>
+        <div class="nav-icon"></div>
         <span>Form Group</span>
       </button>
     {% endif %}
   </aside>
 
-  <!-- ── Hamburger toggle button ──────────────────────────────────────── -->
+  <!--  Hamburger toggle button  -->
   <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
 
-  <!-- ── Main content ─────────────────────────────────────────────────── -->
+  <!--  Main content  -->
   <div class="main-content">
 
     {% if group %}
 
-      <!-- ══ SECTION: Group Members ══════════════════════════════════════ -->
+      <!--  SECTION: Group Members  -->
       <div class="section-panel active" id="section-members">
         <div class="page-header">
-          <h1>👥 Group Members</h1>
+          <h1> Group Members</h1>
           <p>Your project team</p>
         </div>
         <div class="card" style="max-width:560px;">
           {% for m in members %}
-          <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #f5f5f3;">
-            <div style="width:46px;height:46px;border-radius:50%;background:{% if m.is_lead %}#e0f2fe{% else %}#f5f5f3{% endif %};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">
-              {% if m.is_lead %}👑{% else %}👤{% endif %}
+          <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #fdf3f5;">
+            <div style="width:46px;height:46px;border-radius:50%;background:{% if m.is_lead %}#fdecef{% else %}#fdf3f5{% endif %};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">
+              {% if m.is_lead %}{% else %}{% endif %}
             </div>
             <div style="flex:1;">
-              <div style="font-weight:700;font-size:15px;color:{% if m.is_lead %}#0891b2{% else %}#111{% endif %};">
+              <div style="font-weight:700;font-size:15px;color:{% if m.is_lead %}#c8102e{% else %}#111{% endif %};">
                 {{ m.name }}
-                {% if m.is_lead %}<span style="font-size:11px;background:#e0f2fe;color:#0891b2;padding:2px 8px;border-radius:10px;margin-left:6px;">Team Lead</span>{% endif %}
+                {% if m.is_lead %}<span style="font-size:11px;background:#fdecef;color:#c8102e;padding:2px 8px;border-radius:10px;margin-left:6px;">Team Lead</span>{% endif %}
               </div>
               <div class="text-muted" style="font-family:'DM Mono',monospace;font-size:12px;">{{ m.prn }}</div>
               <div class="text-muted" style="font-size:12px;">{{ m.email or '' }}</div>
@@ -328,25 +328,25 @@
         </div>
       </div>
 
-      <!-- ══ SECTION: Assigned Guide ═════════════════════════════════════ -->
+      <!--  SECTION: Assigned Guide  -->
       <div class="section-panel" id="section-guide">
         <div class="page-header">
-          <h1>🎓 Assigned Guide</h1>
+          <h1> Assigned Guide</h1>
           <p>Your project supervisor</p>
         </div>
         <div class="card" style="max-width:480px;">
           {% if group.guide_name %}
           <div style="display:flex;align-items:center;gap:16px;">
-            <div style="width:60px;height:60px;border-radius:16px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🎓</div>
+            <div style="width:60px;height:60px;border-radius:16px;background:#fdecef;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;"></div>
             <div>
-              <div style="font-weight:800;font-size:18px;color:#0891b2;">{{ group.guide_name }}</div>
+              <div style="font-weight:800;font-size:18px;color:#c8102e;">{{ group.guide_name }}</div>
               <div class="text-muted" style="margin-top:4px;">{{ group.guide_email }}</div>
               <div class="text-muted">{{ group.guide_dept or '' }}</div>
             </div>
           </div>
           {% else %}
           <div class="empty" style="padding:40px 0;">
-            <div class="empty-icon">🎓</div>
+            <div class="empty-icon"></div>
             <h3>Not Yet Assigned</h3>
             <p>The coordinator will assign a guide to your group. Check back later.</p>
           </div>
@@ -354,25 +354,25 @@
         </div>
       </div>
 
-      <!-- ══ SECTION: Project Title ═══════════════════════════════════════ -->
+      <!--  SECTION: Project Title  -->
       <div class="section-panel" id="section-title">
         <div class="page-header">
-          <h1>📋 Project Title</h1>
+          <h1> Project Title</h1>
           <p>Your group's project topic</p>
         </div>
         <div class="card" style="max-width:580px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
             <div class="card-title">Project Title</div>
             {% if group.title_finalized %}
-              <span class="badge badge-green">🔒 Finalized</span>
+              <span class="badge badge-green"> Finalized</span>
             {% else %}
-              <span class="badge badge-orange">⏳ Pending Approval</span>
+              <span class="badge badge-orange"> Pending Approval</span>
             {% endif %}
           </div>
 
           {% if group.title_finalized %}
             <div class="finalized-banner">
-              <div style="font-size:28px;">✅</div>
+              <div style="font-size:28px;"></div>
               <div>
                 <div style="font-size:11px;font-weight:700;opacity:0.7;text-transform:uppercase;letter-spacing:0.06em;">Finalized Project</div>
                 <div style="font-size:18px;font-weight:800;margin-top:2px;">{{ group.project_title }}</div>
@@ -383,8 +383,8 @@
             </div>
           {% else %}
             {% if group.project_title %}
-            <div style="padding:14px;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;margin-bottom:16px;">
-              <div style="font-size:12px;font-weight:700;color:#c2410c;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Current Title (not yet finalized)</div>
+            <div style="padding:14px;background:#fff7ed;border:1px solid #f4c2ca;border-radius:10px;margin-bottom:16px;">
+              <div style="font-size:12px;font-weight:700;color:#8f1128;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Current Title (not yet finalized)</div>
               <div style="font-size:16px;font-weight:700;color:#111;">{{ group.project_title }}</div>
             </div>
             {% endif %}
@@ -392,11 +392,11 @@
             <form method="POST" action="/student/update-title">
               <div style="display:flex;gap:8px;margin-bottom:14px;">
                 <button type="button" id="tabGuide" onclick="setTitleTab('guide')"
-                  style="flex:1;padding:9px;border-radius:8px;border:2px solid #059669;background:#dcfce7;color:#059669;font-size:13px;font-weight:700;cursor:pointer;">
+                  style="flex:1;padding:9px;border-radius:8px;border:2px solid #c8102e;background:#fdecef;color:#c8102e;font-size:13px;font-weight:700;cursor:pointer;">
                   From Guide List
                 </button>
                 <button type="button" id="tabCustom" onclick="setTitleTab('custom')"
-                  style="flex:1;padding:9px;border-radius:8px;border:2px solid #eee;background:#fafaf8;color:#888;font-size:13px;font-weight:700;cursor:pointer;">
+                  style="flex:1;padding:9px;border-radius:8px;border:2px solid #eee;background:#fff9fa;color:#888;font-size:13px;font-weight:700;cursor:pointer;">
                   Custom Title
                 </button>
               </div>
@@ -433,20 +433,20 @@
         </div>
       </div>
 
-      <!-- ══ SECTION: Paper Publication ══════════════════════════════════ -->
+      <!--  SECTION: Paper Publication  -->
       <div class="section-panel" id="section-paper">
         <div class="page-header">
-          <h1>📰 Paper Publication</h1>
+          <h1> Paper Publication</h1>
           <p>Submit Stage 1 &amp; Stage 2 publication details</p>
         </div>
         <div class="card" style="max-width:680px;">
           <div class="stage-tabs">
             <button class="stage-tab active {% if 1 in papers %}done{% endif %}" id="stageTab1" onclick="switchStage(1, this)">
-              {% if 1 in papers %}✅{% else %}📄{% endif %} Stage 1
+              {% if 1 in papers %}{% else %}{% endif %} Stage 1
               {% if 1 in papers %}<br><span style="font-size:10px;font-weight:500;">Submitted</span>{% endif %}
             </button>
             <button class="stage-tab {% if 2 in papers %}done{% endif %}" id="stageTab2" onclick="switchStage(2, this)">
-              {% if 2 in papers %}✅{% else %}📄{% endif %} Stage 2
+              {% if 2 in papers %}{% else %}{% endif %} Stage 2
               {% if 2 in papers %}<br><span style="font-size:10px;font-weight:500;">Submitted</span>{% endif %}
             </button>
           </div>
@@ -456,14 +456,14 @@
             {% if 1 in papers %}{% set p1 = papers[1] %}
             <div class="submitted-paper-card">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-                <span class="badge badge-green">✅ Stage 1 Submitted</span>
+                <span class="badge badge-green"> Stage 1 Submitted</span>
                 <span style="font-size:11px;color:#888;">{{ p1.submitted_at[:16] if p1.submitted_at else '' }}</span>
               </div>
-              <div style="font-size:13px;font-weight:700;color:#065f46;line-height:1.8;background:#fff;padding:12px 14px;border-radius:8px;border:1px solid #bbf7d0;font-style:italic;" class="multiline-ellipsis-3">
+              <div style="font-size:13px;font-weight:700;color:#8f1128;line-height:1.8;background:#fff;padding:12px 14px;border-radius:8px;border:1px solid #f4c2ca;font-style:italic;" class="multiline-ellipsis-3">
                 PUBLISHED PAPER ENTITLED "{{ p1.paper_title|upper }}" IN {{ p1.journal_name|upper }} VOLUME {{ p1.volume_no }}, ISSUE {{ p1.issue }}, {{ p1.timeline|upper }}, E ISSN {{ p1.e_issn }}
               </div>
               {% if p1.pdf_filename %}
-              <a href="/view-paper/{{ p1.pdf_filename }}" target="_blank" class="btn btn-success btn-sm" style="margin-top:10px;">📄 View PDF</a>
+              <a href="/view-paper/{{ p1.pdf_filename }}" target="_blank" class="btn btn-success btn-sm" style="margin-top:10px;"> View PDF</a>
               {% endif %}
             </div>
             <div style="font-size:13px;color:#888;margin-bottom:14px;">You can update your Stage 1 submission below.</div>
@@ -471,31 +471,31 @@
             <form method="POST" action="/student/submit-paper" enctype="multipart/form-data" id="paperForm1" onsubmit="return validatePaperForm(1)">
               <input type="hidden" name="stage" value="1">
               <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label">📌 Published Paper Entitled *</label>
+                <label class="form-label"> Published Paper Entitled *</label>
                 <input class="form-control" name="paper_title" id="pt1_title" placeholder="e.g. AI Based Face Recognition Attendance System" value="{{ papers[1].paper_title if 1 in papers else '' }}" oninput="updatePreview(1)" required>
               </div>
               <div class="paper-form-grid">
-                <div class="form-group"><label class="form-label">📖 Journal / Conference Name *</label><input class="form-control" name="journal_name" id="pt1_journal" placeholder="e.g. IJIRMPS" value="{{ papers[1].journal_name if 1 in papers else '' }}" oninput="updatePreview(1)" required></div>
-                <div class="form-group"><label class="form-label">📚 Volume No *</label><input class="form-control" name="volume_no" id="pt1_volume" placeholder="e.g. 12" value="{{ papers[1].volume_no if 1 in papers else '' }}" oninput="updatePreview(1)" required></div>
-                <div class="form-group"><label class="form-label">🔢 Issue *</label><input class="form-control" name="issue" id="pt1_issue" placeholder="e.g. 2" value="{{ papers[1].issue if 1 in papers else '' }}" oninput="updatePreview(1)" required></div>
-                <div class="form-group"><label class="form-label">📅 Timeline *</label><input class="form-control" name="timeline" id="pt1_timeline" placeholder="e.g. March-April 2024" value="{{ papers[1].timeline if 1 in papers else '' }}" oninput="updatePreview(1)" required></div>
+                <div class="form-group"><label class="form-label"> Journal / Conference Name *</label><input class="form-control" name="journal_name" id="pt1_journal" placeholder="e.g. IJIRMPS" value="{{ papers[1].journal_name if 1 in papers else '' }}" oninput="updatePreview(1)" required></div>
+                <div class="form-group"><label class="form-label"> Volume No *</label><input class="form-control" name="volume_no" id="pt1_volume" placeholder="e.g. 12" value="{{ papers[1].volume_no if 1 in papers else '' }}" oninput="updatePreview(1)" required></div>
+                <div class="form-group"><label class="form-label"> Issue *</label><input class="form-control" name="issue" id="pt1_issue" placeholder="e.g. 2" value="{{ papers[1].issue if 1 in papers else '' }}" oninput="updatePreview(1)" required></div>
+                <div class="form-group"><label class="form-label"> Timeline *</label><input class="form-control" name="timeline" id="pt1_timeline" placeholder="e.g. March-April 2024" value="{{ papers[1].timeline if 1 in papers else '' }}" oninput="updatePreview(1)" required></div>
               </div>
-              <div class="form-group" style="margin-bottom:4px;"><label class="form-label">🔏 E-ISSN *</label><input class="form-control" name="e_issn" id="pt1_issn" placeholder="e.g. 2349-7300" value="{{ papers[1].e_issn if 1 in papers else '' }}" oninput="updatePreview(1)" required></div>
+              <div class="form-group" style="margin-bottom:4px;"><label class="form-label"> E-ISSN *</label><input class="form-control" name="e_issn" id="pt1_issn" placeholder="e.g. 2349-7300" value="{{ papers[1].e_issn if 1 in papers else '' }}" oninput="updatePreview(1)" required></div>
               <div class="citation-preview" id="preview1"><span style="color:#9ca3af;font-style:italic;font-weight:400;">Fill in the details above to see citation preview...</span></div>
               <div style="margin-top:16px;">
-                <label class="form-label" style="margin-bottom:6px;display:block;">📎 Upload Publication PDF *</label>
+                <label class="form-label" style="margin-bottom:6px;display:block;"> Upload Publication PDF *</label>
                 <div class="pdf-upload-zone" id="dropZone1">
                   <input type="file" name="pdf_file" id="pdfFile1" accept=".pdf" onchange="handleFileSelect(1, this)">
                   <div id="dropZoneContent1">
-                    <div style="font-size:28px;margin-bottom:8px;">📄</div>
+                    <div style="font-size:28px;margin-bottom:8px;"></div>
                     <div style="font-weight:700;font-size:14px;color:#555;">Click to upload PDF</div>
-                    <div style="font-size:12px;color:#aaa;margin-top:4px;">Only .pdf files · Max 16MB</div>
-                    {% if 1 in papers and papers[1].pdf_filename %}<div style="font-size:12px;color:#059669;margin-top:6px;font-weight:600;">Current: {{ papers[1].pdf_filename.split('_',3)[-1] }}</div>{% endif %}
+                    <div style="font-size:12px;color:#aaa;margin-top:4px;">Only .pdf files  Max 16MB</div>
+                    {% if 1 in papers and papers[1].pdf_filename %}<div style="font-size:12px;color:#c8102e;margin-top:6px;font-weight:600;">Current: {{ papers[1].pdf_filename.split('_',3)[-1] }}</div>{% endif %}
                   </div>
                 </div>
               </div>
               <button type="submit" class="btn btn-student btn-lg" style="width:100%;justify-content:center;margin-top:16px;">
-                {% if 1 in papers %}🔄 Update Stage 1{% else %}🚀 Submit Stage 1 Paper{% endif %}
+                {% if 1 in papers %} Update Stage 1{% else %} Submit Stage 1 Paper{% endif %}
               </button>
             </form>
           </div>
@@ -505,14 +505,14 @@
             {% if 2 in papers %}{% set p2 = papers[2] %}
             <div class="submitted-paper-card">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-                <span class="badge badge-green">✅ Stage 2 Submitted</span>
+                <span class="badge badge-green"> Stage 2 Submitted</span>
                 <span style="font-size:11px;color:#888;">{{ p2.submitted_at[:16] if p2.submitted_at else '' }}</span>
               </div>
-              <div style="font-size:13px;font-weight:700;color:#065f46;line-height:1.8;background:#fff;padding:12px 14px;border-radius:8px;border:1px solid #bbf7d0;font-style:italic;" class="multiline-ellipsis-3">
+              <div style="font-size:13px;font-weight:700;color:#8f1128;line-height:1.8;background:#fff;padding:12px 14px;border-radius:8px;border:1px solid #f4c2ca;font-style:italic;" class="multiline-ellipsis-3">
                 PUBLISHED PAPER ENTITLED "{{ p2.paper_title|upper }}" IN {{ p2.journal_name|upper }} VOLUME {{ p2.volume_no }}, ISSUE {{ p2.issue }}, {{ p2.timeline|upper }}, E ISSN {{ p2.e_issn }}
               </div>
               {% if p2.pdf_filename %}
-              <a href="/view-paper/{{ p2.pdf_filename }}" target="_blank" class="btn btn-success btn-sm" style="margin-top:10px;">📄 View PDF</a>
+              <a href="/view-paper/{{ p2.pdf_filename }}" target="_blank" class="btn btn-success btn-sm" style="margin-top:10px;"> View PDF</a>
               {% endif %}
             </div>
             <div style="font-size:13px;color:#888;margin-bottom:14px;">You can update your Stage 2 submission below.</div>
@@ -520,31 +520,31 @@
             <form method="POST" action="/student/submit-paper" enctype="multipart/form-data" id="paperForm2" onsubmit="return validatePaperForm(2)">
               <input type="hidden" name="stage" value="2">
               <div class="form-group" style="margin-bottom:12px;">
-                <label class="form-label">📌 Published Paper Entitled *</label>
+                <label class="form-label"> Published Paper Entitled *</label>
                 <input class="form-control" name="paper_title" id="pt2_title" placeholder="e.g. AI Based Face Recognition Attendance System" value="{{ papers[2].paper_title if 2 in papers else '' }}" oninput="updatePreview(2)" required>
               </div>
               <div class="paper-form-grid">
-                <div class="form-group"><label class="form-label">📖 Journal / Conference Name *</label><input class="form-control" name="journal_name" id="pt2_journal" placeholder="e.g. IJIRMPS" value="{{ papers[2].journal_name if 2 in papers else '' }}" oninput="updatePreview(2)" required></div>
-                <div class="form-group"><label class="form-label">📚 Volume No *</label><input class="form-control" name="volume_no" id="pt2_volume" placeholder="e.g. 12" value="{{ papers[2].volume_no if 2 in papers else '' }}" oninput="updatePreview(2)" required></div>
-                <div class="form-group"><label class="form-label">🔢 Issue *</label><input class="form-control" name="issue" id="pt2_issue" placeholder="e.g. 2" value="{{ papers[2].issue if 2 in papers else '' }}" oninput="updatePreview(2)" required></div>
-                <div class="form-group"><label class="form-label">📅 Timeline *</label><input class="form-control" name="timeline" id="pt2_timeline" placeholder="e.g. May-June 2024" value="{{ papers[2].timeline if 2 in papers else '' }}" oninput="updatePreview(2)" required></div>
+                <div class="form-group"><label class="form-label"> Journal / Conference Name *</label><input class="form-control" name="journal_name" id="pt2_journal" placeholder="e.g. IJIRMPS" value="{{ papers[2].journal_name if 2 in papers else '' }}" oninput="updatePreview(2)" required></div>
+                <div class="form-group"><label class="form-label"> Volume No *</label><input class="form-control" name="volume_no" id="pt2_volume" placeholder="e.g. 12" value="{{ papers[2].volume_no if 2 in papers else '' }}" oninput="updatePreview(2)" required></div>
+                <div class="form-group"><label class="form-label"> Issue *</label><input class="form-control" name="issue" id="pt2_issue" placeholder="e.g. 2" value="{{ papers[2].issue if 2 in papers else '' }}" oninput="updatePreview(2)" required></div>
+                <div class="form-group"><label class="form-label"> Timeline *</label><input class="form-control" name="timeline" id="pt2_timeline" placeholder="e.g. May-June 2024" value="{{ papers[2].timeline if 2 in papers else '' }}" oninput="updatePreview(2)" required></div>
               </div>
-              <div class="form-group" style="margin-bottom:4px;"><label class="form-label">🔏 E-ISSN *</label><input class="form-control" name="e_issn" id="pt2_issn" placeholder="e.g. 2349-7300" value="{{ papers[2].e_issn if 2 in papers else '' }}" oninput="updatePreview(2)" required></div>
+              <div class="form-group" style="margin-bottom:4px;"><label class="form-label"> E-ISSN *</label><input class="form-control" name="e_issn" id="pt2_issn" placeholder="e.g. 2349-7300" value="{{ papers[2].e_issn if 2 in papers else '' }}" oninput="updatePreview(2)" required></div>
               <div class="citation-preview" id="preview2"><span style="color:#9ca3af;font-style:italic;font-weight:400;">Fill in the details above to see citation preview...</span></div>
               <div style="margin-top:16px;">
-                <label class="form-label" style="margin-bottom:6px;display:block;">📎 Upload Publication PDF *</label>
+                <label class="form-label" style="margin-bottom:6px;display:block;"> Upload Publication PDF *</label>
                 <div class="pdf-upload-zone" id="dropZone2">
                   <input type="file" name="pdf_file" id="pdfFile2" accept=".pdf" onchange="handleFileSelect(2, this)">
                   <div id="dropZoneContent2">
-                    <div style="font-size:28px;margin-bottom:8px;">📄</div>
+                    <div style="font-size:28px;margin-bottom:8px;"></div>
                     <div style="font-weight:700;font-size:14px;color:#555;">Click to upload PDF</div>
-                    <div style="font-size:12px;color:#aaa;margin-top:4px;">Only .pdf files · Max 16MB</div>
-                    {% if 2 in papers and papers[2].pdf_filename %}<div style="font-size:12px;color:#059669;margin-top:6px;font-weight:600;">Current: {{ papers[2].pdf_filename.split('_',3)[-1] }}</div>{% endif %}
+                    <div style="font-size:12px;color:#aaa;margin-top:4px;">Only .pdf files  Max 16MB</div>
+                    {% if 2 in papers and papers[2].pdf_filename %}<div style="font-size:12px;color:#c8102e;margin-top:6px;font-weight:600;">Current: {{ papers[2].pdf_filename.split('_',3)[-1] }}</div>{% endif %}
                   </div>
                 </div>
               </div>
               <button type="submit" class="btn btn-student btn-lg" style="width:100%;justify-content:center;margin-top:16px;">
-                {% if 2 in papers %}🔄 Update Stage 2{% else %}🚀 Submit Stage 2 Paper{% endif %}
+                {% if 2 in papers %} Update Stage 2{% else %} Submit Stage 2 Paper{% endif %}
               </button>
             </form>
           </div>
@@ -553,29 +553,29 @@
 
     {% else %}
 
-      <!-- ══ SECTION: Form Group ══════════════════════════════════════════ -->
+      <!--  SECTION: Form Group  -->
       <div class="section-panel active" id="section-form">
         <div class="page-header">
           <h1>Form Your Group</h1>
           <p>Select up to 3 more members, choose a team lead and project title.</p>
         </div>
         <div class="alert alert-warning" style="margin-bottom:20px;">
-          ⚠️ Groups are final once submitted — choose members carefully!
+           Groups are final once submitted  choose members carefully!
         </div>
         <form method="POST" action="/student/form-group" id="groupForm">
           <div class="grid-2" style="align-items:start;">
             <div style="display:flex;flex-direction:column;gap:14px;">
               <div class="card">
                 <div class="card-title" style="margin-bottom:4px;">Select Members</div>
-                <div class="text-muted" style="margin-bottom:16px;font-size:13px;">Select 1–3 more students. You are auto-included. <span id="countLabel">0/3 selected</span></div>
+                <div class="text-muted" style="margin-bottom:16px;font-size:13px;">Select 13 more students. You are auto-included. <span id="countLabel">0/3 selected</span></div>
                 {% if available %}
                 <div style="display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;" id="memberList">
                   {% for s in available %}
                   <div class="student-card" id="card_{{ s.id }}" onclick="toggleMember('{{ s.id }}', '{{ s.name }}')">
-                    <div class="check-box" id="check_{{ s.id }}">○</div>
+                    <div class="check-box" id="check_{{ s.id }}"></div>
                     <div>
                       <div style="font-weight:600;font-size:14px;">{{ s.name }}</div>
-                      <div class="text-muted">{{ s.prn }}{% if s.division %} · Div {{ s.division }}{% endif %}</div>
+                      <div class="text-muted">{{ s.prn }}{% if s.division %}  Div {{ s.division }}{% endif %}</div>
                     </div>
                   </div>
                   {% endfor %}
@@ -587,7 +587,7 @@
               <div class="card">
                 <div class="card-title" style="margin-bottom:12px;">Select Team Lead</div>
                 <select class="form-control" name="team_lead" id="leadSelect" required>
-                  <option value="">— Choose team lead —</option>
+                  <option value=""> Choose team lead </option>
                   <option value="{{ student.id }}">You ({{ student.name }})</option>
                 </select>
               </div>
@@ -596,8 +596,8 @@
               <div class="card-title" style="margin-bottom:4px;">Project Title</div>
               <div class="text-muted" style="margin-bottom:14px;font-size:13px;">You can change this until the coordinator finalizes it.</div>
               <div style="display:flex;gap:8px;margin-bottom:16px;">
-                <button type="button" id="tabGuide" onclick="setTitleTab('guide')" style="flex:1;padding:9px;border-radius:8px;border:2px solid #059669;background:#dcfce7;color:#059669;font-size:13px;font-weight:700;cursor:pointer;">Choose from Guide</button>
-                <button type="button" id="tabCustom" onclick="setTitleTab('custom')" style="flex:1;padding:9px;border-radius:8px;border:2px solid #eee;background:#fafaf8;color:#888;font-size:13px;font-weight:700;cursor:pointer;">Custom Title</button>
+                <button type="button" id="tabGuide" onclick="setTitleTab('guide')" style="flex:1;padding:9px;border-radius:8px;border:2px solid #c8102e;background:#fdecef;color:#c8102e;font-size:13px;font-weight:700;cursor:pointer;">Choose from Guide</button>
+                <button type="button" id="tabCustom" onclick="setTitleTab('custom')" style="flex:1;padding:9px;border-radius:8px;border:2px solid #eee;background:#fff9fa;color:#888;font-size:13px;font-weight:700;cursor:pointer;">Custom Title</button>
               </div>
               <input type="hidden" name="title_type" id="titleType" value="guide">
               <div id="guideTitlesSection">
@@ -618,13 +618,13 @@
               <div id="customTitleSection" style="display:none;">
                 <div class="form-group"><label class="form-label">Enter Your Title</label><input class="form-control" name="custom_title" id="customTitleInput" placeholder="e.g. Smart Traffic Management using IoT"></div>
               </div>
-              <div style="margin-top:20px;padding:14px;background:#f8f8f6;border-radius:10px;font-size:13px;line-height:2;">
+              <div style="margin-top:20px;padding:14px;background:#fff7f8;border-radius:10px;font-size:13px;line-height:2;">
                 <div style="font-weight:700;color:#aaa;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Group Summary</div>
                 Members: <strong id="summMembers">1/4 (just you)</strong><br>
-                Team Lead: <strong id="summLead">—</strong><br>
-                Project: <strong id="summTitle">—</strong>
+                Team Lead: <strong id="summLead"></strong><br>
+                Project: <strong id="summTitle"></strong>
               </div>
-              <button type="submit" class="btn btn-student btn-lg" style="width:100%;justify-content:center;margin-top:16px;" onclick="return validateForm()">Form Group 🚀</button>
+              <button type="submit" class="btn btn-student btn-lg" style="width:100%;justify-content:center;margin-top:16px;" onclick="return validateForm()">Form Group </button>
             </div>
           </div>
         </form>
@@ -635,7 +635,7 @@
 </div><!-- end portal-wrap -->
 
 <script>
-// ── Sidebar toggle ────────────────────────────────────────────────────────
+//  Sidebar toggle 
 function toggleSidebar() {
   const sb  = document.getElementById('sidebar');
   const btn = document.getElementById('hamburgerBtn');
@@ -650,7 +650,7 @@ function closeSidebar() {
   document.getElementById('sidebarOverlay').classList.remove('active');
 }
 
-// ── Section switching ─────────────────────────────────────────────────────
+//  Section switching 
 function showSection(name, btn) {
   // Hide all panels
   document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
@@ -666,7 +666,7 @@ function showSection(name, btn) {
   if (name === 'paper') { updatePreview(1); updatePreview(2); }
 }
 
-// ── Stage switching ───────────────────────────────────────────────────────
+//  Stage switching 
 function switchStage(stage, btn) {
   document.getElementById('stagePanel1').style.display = stage === 1 ? '' : 'none';
   document.getElementById('stagePanel2').style.display = stage === 2 ? '' : 'none';
@@ -675,7 +675,7 @@ function switchStage(stage, btn) {
   updatePreview(stage);
 }
 
-// ── Citation preview ──────────────────────────────────────────────────────
+//  Citation preview 
 function updatePreview(stage) {
   const s = stage;
   const title   = (document.getElementById('pt'+s+'_title')?.value   || '').trim();
@@ -691,31 +691,31 @@ function updatePreview(stage) {
     return;
   }
   let text = 'PUBLISHED PAPER ENTITLED ';
-  text += title   ? `"<span>${title.toUpperCase()}"</span> `          : '"<span style=\'color:#fca5a5\'>PAPER TITLE</span>" ';
+  text += title   ? `"<span>${title.toUpperCase()}"</span> `          : '"<span style=\'color:#c8102e\'>PAPER TITLE</span>" ';
   text += 'IN ';
-  text += journal ? `<span>${journal.toUpperCase()}</span> `          : '<span style=\'color:#fca5a5\'>JOURNAL</span> ';
+  text += journal ? `<span>${journal.toUpperCase()}</span> `          : '<span style=\'color:#c8102e\'>JOURNAL</span> ';
   text += 'VOLUME ';
-  text += volume  ? `<span>${volume}</span>`                          : '<span style=\'color:#fca5a5\'>XX</span>';
-  text += issue   ? `, ISSUE <span>${issue}</span>`                   : ', ISSUE <span style=\'color:#fca5a5\'>X</span>';
-  text += timeline? `, <span>${timeline.toUpperCase()}</span>`        : ', <span style=\'color:#fca5a5\'>TIMELINE</span>';
-  text += issn    ? `, E ISSN <span>${issn}</span>`                   : ', E ISSN <span style=\'color:#fca5a5\'>XXXX-XXXX</span>';
+  text += volume  ? `<span>${volume}</span>`                          : '<span style=\'color:#c8102e\'>XX</span>';
+  text += issue   ? `, ISSUE <span>${issue}</span>`                   : ', ISSUE <span style=\'color:#c8102e\'>X</span>';
+  text += timeline? `, <span>${timeline.toUpperCase()}</span>`        : ', <span style=\'color:#c8102e\'>TIMELINE</span>';
+  text += issn    ? `, E ISSN <span>${issn}</span>`                   : ', E ISSN <span style=\'color:#c8102e\'>XXXX-XXXX</span>';
   preview.innerHTML = text;
 }
 
-// ── PDF file select ───────────────────────────────────────────────────────
+//  PDF file select 
 function handleFileSelect(stage, input) {
   const zone    = document.getElementById('dropZone' + stage);
   const content = document.getElementById('dropZoneContent' + stage);
   if (input.files && input.files[0]) {
     const file = input.files[0];
     zone.classList.add('has-file');
-    content.innerHTML = `<div style="font-size:28px;margin-bottom:8px;">✅</div>
-      <div style="font-weight:700;font-size:14px;color:#059669;">${file.name}</div>
-      <div style="font-size:12px;color:#888;margin-top:4px;">${(file.size/1024/1024).toFixed(2)} MB — Click to change</div>`;
+    content.innerHTML = `<div style="font-size:28px;margin-bottom:8px;"></div>
+      <div style="font-weight:700;font-size:14px;color:#c8102e;">${file.name}</div>
+      <div style="font-size:12px;color:#888;margin-top:4px;">${(file.size/1024/1024).toFixed(2)} MB  Click to change</div>`;
   }
 }
 
-// ── Paper form validation ─────────────────────────────────────────────────
+//  Paper form validation 
 function validatePaperForm(stage) {
   const fields = ['pt'+stage+'_title','pt'+stage+'_journal','pt'+stage+'_volume','pt'+stage+'_issue','pt'+stage+'_timeline','pt'+stage+'_issn'];
   for (const f of fields) {
@@ -733,7 +733,7 @@ function validatePaperForm(stage) {
   return true;
 }
 
-// ── Member selection ──────────────────────────────────────────────────────
+//  Member selection 
 const selectedMembers = new Set();
 const memberNames = {};
 const MAX = 3;
@@ -743,7 +743,7 @@ function toggleMember(id, name) {
   if (!card) return;
   if (selectedMembers.has(id)) {
     selectedMembers.delete(id); delete memberNames[id];
-    card.classList.remove('selected'); check.textContent = '○';
+    card.classList.remove('selected'); check.textContent = '';
     document.getElementById('hid_'+id)?.remove();
     document.getElementById('opt_'+id)?.remove();
     const sel = document.getElementById('leadSelect');
@@ -751,7 +751,7 @@ function toggleMember(id, name) {
   } else {
     if (selectedMembers.size >= MAX) { alert('Maximum 3 members (4 total with you).'); return; }
     selectedMembers.add(id); memberNames[id] = name;
-    card.classList.add('selected'); check.textContent = '✓';
+    card.classList.add('selected'); check.textContent = '';
     const inp = document.createElement('input');
     inp.type='hidden'; inp.name='members'; inp.value=id; inp.id='hid_'+id;
     document.getElementById('groupForm').appendChild(inp);
@@ -771,13 +771,13 @@ function updateSummary() {
   const sel = document.getElementById('leadSelect');
   if (sel) {
     const sl = document.getElementById('summLead');
-    const name = sel.options[sel.selectedIndex]?.text || '—';
-    if (sl) sl.textContent = name === '— Choose team lead —' ? '—' : name;
+    const name = sel.options[sel.selectedIndex]?.text || '';
+    if (sl) sl.textContent = name === ' Choose team lead ' ? '' : name;
   }
 }
 document.getElementById('leadSelect')?.addEventListener('change', updateSummary);
 
-// ── Title selection ───────────────────────────────────────────────────────
+//  Title selection 
 function selectTitle(title, el) {
   document.querySelectorAll('.title-option').forEach(t => t.classList.remove('selected'));
   el.classList.add('selected');
@@ -792,15 +792,15 @@ function setTitleTab(tab) {
   document.getElementById('customTitleSection').style.display  = isGuide ? 'none' : '';
   document.getElementById('titleType').value = tab;
   document.getElementById('tabGuide').style.cssText = isGuide
-    ? 'flex:1;padding:9px;border-radius:8px;border:2px solid #059669;background:#dcfce7;color:#059669;font-size:13px;font-weight:700;cursor:pointer;'
-    : 'flex:1;padding:9px;border-radius:8px;border:2px solid #eee;background:#fafaf8;color:#888;font-size:13px;font-weight:700;cursor:pointer;';
+    ? 'flex:1;padding:9px;border-radius:8px;border:2px solid #c8102e;background:#fdecef;color:#c8102e;font-size:13px;font-weight:700;cursor:pointer;'
+    : 'flex:1;padding:9px;border-radius:8px;border:2px solid #eee;background:#fff9fa;color:#888;font-size:13px;font-weight:700;cursor:pointer;';
   document.getElementById('tabCustom').style.cssText = !isGuide
-    ? 'flex:1;padding:9px;border-radius:8px;border:2px solid #059669;background:#dcfce7;color:#059669;font-size:13px;font-weight:700;cursor:pointer;'
-    : 'flex:1;padding:9px;border-radius:8px;border:2px solid #eee;background:#fafaf8;color:#888;font-size:13px;font-weight:700;cursor:pointer;';
+    ? 'flex:1;padding:9px;border-radius:8px;border:2px solid #c8102e;background:#fdecef;color:#c8102e;font-size:13px;font-weight:700;cursor:pointer;'
+    : 'flex:1;padding:9px;border-radius:8px;border:2px solid #eee;background:#fff9fa;color:#888;font-size:13px;font-weight:700;cursor:pointer;';
 }
 document.getElementById('customTitleInput')?.addEventListener('input', function() {
   const st = document.getElementById('summTitle');
-  if (st) st.textContent = this.value || '—';
+  if (st) st.textContent = this.value || '';
 });
 function validateForm() {
   if (selectedMembers.size < 1) { alert('Please select at least 1 more member.'); return false; }
@@ -812,3 +812,4 @@ function validateForm() {
 document.addEventListener('DOMContentLoaded', () => { updatePreview(1); updatePreview(2); });
 </script>
 {% endblock %}
+

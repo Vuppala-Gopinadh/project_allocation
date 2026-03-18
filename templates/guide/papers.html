@@ -1,16 +1,16 @@
-{% extends "base.html" %}
-{% block title %}Paper Publications — Guide{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Paper Publications  Guide{% endblock %}
 {% block content %}
 <div class="page fade-in">
   <div class="page-header">
-    <h1>📰 Paper Publications</h1>
+    <h1> Paper Publications</h1>
     <p>Publication submissions from your assigned groups (Stage 1 & Stage 2)</p>
   </div>
 
   {% if not papers %}
   <div class="card">
     <div class="empty">
-      <div class="empty-icon">📄</div>
+      <div class="empty-icon"></div>
       <h3>No Publications Yet</h3>
       <p>Your assigned groups haven't submitted any paper publications yet.</p>
     </div>
@@ -23,13 +23,13 @@
 
   {% if s1_papers %}
   <div style="margin-bottom:8px;display:flex;align-items:center;gap:10px;">
-    <div style="width:36px;height:36px;border-radius:10px;background:#ede9fe;display:flex;align-items:center;justify-content:center;font-size:18px;">1️⃣</div>
+    <div style="width:36px;height:36px;border-radius:10px;background:#fdecef;display:flex;align-items:center;justify-content:center;font-size:18px;">1</div>
     <div style="font-size:18px;font-weight:800;letter-spacing:-0.02em;">Stage 1 Publications</div>
     <span class="badge badge-purple">{{ s1_papers|length }}</span>
   </div>
   <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:28px;">
     {% for p in s1_papers %}
-    <div class="card" style="border-left:4px solid #7c3aed;">
+    <div class="card" style="border-left:4px solid #c8102e;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
         <div style="flex:1;min-width:280px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
@@ -37,9 +37,9 @@
             <span style="font-size:12px;color:#aaa;">{{ p.submitted_at[:16] if p.submitted_at else '' }}</span>
           </div>
           <!-- Citation Format -->
-          <div style="background:#faf5ff;border:1.5px solid #ddd6fe;border-radius:10px;padding:14px 16px;margin-bottom:10px;">
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#7c3aed;margin-bottom:6px;">Publication Citation</div>
-            <div style="font-size:13px;font-weight:700;color:#1e1b4b;line-height:1.8;font-style:italic;">
+          <div style="background:#fff5f7;border:1.5px solid #f4c2ca;border-radius:10px;padding:14px 16px;margin-bottom:10px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#c8102e;margin-bottom:6px;">Publication Citation</div>
+            <div style="font-size:13px;font-weight:700;color:#8f1128;line-height:1.8;font-style:italic;">
               PUBLISHED PAPER ENTITLED "{{ p.paper_title|upper }}" IN {{ p.journal_name|upper }} VOLUME {{ p.volume_no }}, ISSUE {{ p.issue }}, {{ p.timeline|upper }}, E ISSN {{ p.e_issn }}
             </div>
           </div>
@@ -50,8 +50,8 @@
         </div>
         <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
           {% if p.pdf_filename %}
-          <a href="/view-paper/{{ p.pdf_filename }}" target="_blank" class="btn btn-sm" style="background:#ede9fe;color:#7c3aed;">
-            📄 View PDF
+          <a href="/view-paper/{{ p.pdf_filename }}" target="_blank" class="btn btn-sm" style="background:#fdecef;color:#c8102e;">
+             View PDF
           </a>
           {% else %}
           <span class="badge badge-gray">No PDF</span>
@@ -60,24 +60,24 @@
       </div>
 
       <!-- Details grid -->
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid #f0f0ee;">
-        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid #f9f0f2;">
+        <div style="padding:8px 10px;background:#fff7f8;border-radius:8px;">
           <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Journal</div>
           <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.journal_name }}</div>
         </div>
-        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+        <div style="padding:8px 10px;background:#fff7f8;border-radius:8px;">
           <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Volume</div>
           <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.volume_no }}</div>
         </div>
-        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+        <div style="padding:8px 10px;background:#fff7f8;border-radius:8px;">
           <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Issue</div>
           <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.issue }}</div>
         </div>
-        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+        <div style="padding:8px 10px;background:#fff7f8;border-radius:8px;">
           <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Timeline</div>
           <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.timeline }}</div>
         </div>
-        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+        <div style="padding:8px 10px;background:#fff7f8;border-radius:8px;">
           <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">E-ISSN</div>
           <div style="font-size:13px;font-weight:700;margin-top:2px;font-family:'DM Mono',monospace;">{{ p.e_issn }}</div>
         </div>
@@ -90,22 +90,22 @@
   <!-- Stage 2 -->
   {% if s2_papers %}
   <div style="margin-bottom:8px;display:flex;align-items:center;gap:10px;">
-    <div style="width:36px;height:36px;border-radius:10px;background:#dcfce7;display:flex;align-items:center;justify-content:center;font-size:18px;">2️⃣</div>
+    <div style="width:36px;height:36px;border-radius:10px;background:#fdecef;display:flex;align-items:center;justify-content:center;font-size:18px;">2</div>
     <div style="font-size:18px;font-weight:800;letter-spacing:-0.02em;">Stage 2 Publications</div>
     <span class="badge badge-green">{{ s2_papers|length }}</span>
   </div>
   <div style="display:flex;flex-direction:column;gap:12px;">
     {% for p in s2_papers %}
-    <div class="card" style="border-left:4px solid #059669;">
+    <div class="card" style="border-left:4px solid #c8102e;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
         <div style="flex:1;min-width:280px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
             <span class="badge badge-green">Stage 2</span>
             <span style="font-size:12px;color:#aaa;">{{ p.submitted_at[:16] if p.submitted_at else '' }}</span>
           </div>
-          <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:14px 16px;margin-bottom:10px;">
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#059669;margin-bottom:6px;">Publication Citation</div>
-            <div style="font-size:13px;font-weight:700;color:#052e16;line-height:1.8;font-style:italic;">
+          <div style="background:#fff5f7;border:1.5px solid #f4c2ca;border-radius:10px;padding:14px 16px;margin-bottom:10px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#c8102e;margin-bottom:6px;">Publication Citation</div>
+            <div style="font-size:13px;font-weight:700;color:#8f1128;line-height:1.8;font-style:italic;">
               PUBLISHED PAPER ENTITLED "{{ p.paper_title|upper }}" IN {{ p.journal_name|upper }} VOLUME {{ p.volume_no }}, ISSUE {{ p.issue }}, {{ p.timeline|upper }}, E ISSN {{ p.e_issn }}
             </div>
           </div>
@@ -117,31 +117,31 @@
         <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
           {% if p.pdf_filename %}
           <a href="/view-paper/{{ p.pdf_filename }}" target="_blank" class="btn btn-sm btn-success">
-            📄 View PDF
+             View PDF
           </a>
           {% else %}
           <span class="badge badge-gray">No PDF</span>
           {% endif %}
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid #f0f0ee;">
-        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid #f9f0f2;">
+        <div style="padding:8px 10px;background:#fff7f8;border-radius:8px;">
           <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Journal</div>
           <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.journal_name }}</div>
         </div>
-        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+        <div style="padding:8px 10px;background:#fff7f8;border-radius:8px;">
           <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Volume</div>
           <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.volume_no }}</div>
         </div>
-        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+        <div style="padding:8px 10px;background:#fff7f8;border-radius:8px;">
           <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Issue</div>
           <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.issue }}</div>
         </div>
-        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+        <div style="padding:8px 10px;background:#fff7f8;border-radius:8px;">
           <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Timeline</div>
           <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.timeline }}</div>
         </div>
-        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+        <div style="padding:8px 10px;background:#fff7f8;border-radius:8px;">
           <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">E-ISSN</div>
           <div style="font-size:13px;font-weight:700;margin-top:2px;font-family:'DM Mono',monospace;">{{ p.e_issn }}</div>
         </div>
@@ -154,3 +154,4 @@
   {% endif %}
 </div>
 {% endblock %}
+

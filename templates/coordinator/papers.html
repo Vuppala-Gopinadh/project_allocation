@@ -1,16 +1,16 @@
-{% extends "base.html" %}
-{% block title %}Paper Publications — Coordinator{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Paper Publications  Coordinator{% endblock %}
 {% block content %}
 <div class="page fade-in">
   <div class="page-header">
-    <h1>📰 All Paper Publications</h1>
+    <h1> All Paper Publications</h1>
     <p>Stage 1 &amp; Stage 2 paper submissions from all student groups</p>
   </div>
 
   {% if not papers %}
   <div class="card">
     <div class="empty">
-      <div class="empty-icon">📄</div>
+      <div class="empty-icon"></div>
       <h3>No Publications Submitted Yet</h3>
       <p>Student groups haven't submitted any paper publications yet.</p>
     </div>
@@ -22,17 +22,17 @@
 
     <!-- Stage 1 card -->
     <div class="stat-card" style="padding:16px 20px;gap:14px;flex:1;min-width:220px;position:relative;">
-      <div class="stat-icon" style="width:44px;height:44px;font-size:20px;background:#ede9fe;flex-shrink:0;"></div>
+      <div class="stat-icon" style="width:44px;height:44px;font-size:20px;background:#fdecef;flex-shrink:0;"></div>
       <div style="flex:1;">
-        <div class="stat-val" style="font-size:26px;color:#7c3aed;">{{ s1_count }}</div>
+        <div class="stat-val" style="font-size:26px;color:#c8102e;">{{ s1_count }}</div>
         <div class="stat-label">Stage 1 Submissions</div>
       </div>
       {% if s1_count > 0 %}
       <a href="{{ url_for('download_papers_docx', stage=1) }}"
          class="btn btn-sm"
-         style="background:#ede9fe;color:#7c3aed;border:1.5px solid #c4b5fd;white-space:nowrap;align-self:center;"
+         style="background:#fdecef;color:#c8102e;border:1.5px solid #c4b5fd;white-space:nowrap;align-self:center;"
          title="Download Stage 1 report as Word document">
-        ⬇ Download DOCX
+         Download DOCX
       </a>
       {% else %}
       <span class="badge badge-gray" style="align-self:center;">No submissions</span>
@@ -41,17 +41,17 @@
 
     <!-- Stage 2 card -->
     <div class="stat-card" style="padding:16px 20px;gap:14px;flex:1;min-width:220px;">
-      <div class="stat-icon" style="width:44px;height:44px;font-size:20px;background:#dcfce7;flex-shrink:0;"></div>
+      <div class="stat-icon" style="width:44px;height:44px;font-size:20px;background:#fdecef;flex-shrink:0;"></div>
       <div style="flex:1;">
-        <div class="stat-val" style="font-size:26px;color:#059669;">{{ s2_count }}</div>
+        <div class="stat-val" style="font-size:26px;color:#c8102e;">{{ s2_count }}</div>
         <div class="stat-label">Stage 2 Submissions</div>
       </div>
       {% if s2_count > 0 %}
       <a href="{{ url_for('download_papers_docx', stage=2) }}"
          class="btn btn-sm"
-         style="background:#dcfce7;color:#059669;border:1.5px solid #86efac;white-space:nowrap;align-self:center;"
+         style="background:#fdecef;color:#c8102e;border:1.5px solid #ef9aa8;white-space:nowrap;align-self:center;"
          title="Download Stage 2 report as Word document">
-        ⬇ Download DOCX
+         Download DOCX
       </a>
       {% else %}
       <span class="badge badge-gray" style="align-self:center;">No submissions</span>
@@ -60,9 +60,9 @@
 
     <!-- Total card -->
     <div class="stat-card" style="padding:16px 20px;gap:14px;flex:1;min-width:220px;">
-      <div class="stat-icon" style="width:44px;height:44px;font-size:20px;background:#dbeafe;flex-shrink:0;"></div>
+      <div class="stat-icon" style="width:44px;height:44px;font-size:20px;background:#fdecef;flex-shrink:0;"></div>
       <div style="flex:1;">
-        <div class="stat-val" style="font-size:26px;color:#1d4ed8;">{{ papers|length }}</div>
+        <div class="stat-val" style="font-size:26px;color:#8f1128;">{{ papers|length }}</div>
         <div class="stat-label">Total Publications</div>
       </div>
     </div>
@@ -70,10 +70,10 @@
 
   <!-- Info banner about DOCX format -->
   <div class="alert alert-info" style="margin-bottom:20px;display:flex;align-items:center;gap:10px;">
-    <span style="font-size:18px;">📋</span>
+    <span style="font-size:18px;"></span>
     <span>
-      Download buttons generate a <strong>formatted Word document</strong> in the college letterhead format —
-      with SR.NO., Paper Title (citation), PRN, and student names — matching your department's publication record template.
+      Download buttons generate a <strong>formatted Word document</strong> in the college letterhead format 
+      with SR.NO., Paper Title (citation), PRN, and student names  matching your department's publication record template.
       Place <code>college_logo.png</code> in the <code>static/</code> folder to include the logo in downloads.
     </span>
   </div>
@@ -85,12 +85,12 @@
       All ({{ papers|length }})
     </button>
     <button onclick="filterPapers('1', this)"
-      style="padding:7px 16px;border-radius:20px;border:1.5px solid #eee;background:#fafaf8;color:#888;font-size:13px;font-weight:600;cursor:pointer;">
-      1️⃣ Stage 1 ({{ s1_count }})
+      style="padding:7px 16px;border-radius:20px;border:1.5px solid #eee;background:#fff9fa;color:#888;font-size:13px;font-weight:600;cursor:pointer;">
+      1 Stage 1 ({{ s1_count }})
     </button>
     <button onclick="filterPapers('2', this)"
-      style="padding:7px 16px;border-radius:20px;border:1.5px solid #eee;background:#fafaf8;color:#888;font-size:13px;font-weight:600;cursor:pointer;">
-      2️⃣ Stage 2 ({{ s2_count }})
+      style="padding:7px 16px;border-radius:20px;border:1.5px solid #eee;background:#fff9fa;color:#888;font-size:13px;font-weight:600;cursor:pointer;">
+      2 Stage 2 ({{ s2_count }})
     </button>
   </div>
 
@@ -99,23 +99,23 @@
     {% set p = pw.paper %}
     {% set members = pw.members %}
     <div class="paper-card card" data-stage="{{ p.stage }}"
-         style="border-left:4px solid {% if p.stage == 1 %}#7c3aed{% else %}#059669{% endif %};">
+         style="border-left:4px solid {% if p.stage == 1 %}#c8102e{% else %}#c8102e{% endif %};">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
         <div style="flex:1;min-width:300px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
             {% if p.stage == 1 %}
-              <span class="badge badge-purple">1️⃣ Stage 1</span>
+              <span class="badge badge-purple">1 Stage 1</span>
             {% else %}
-              <span class="badge badge-green">2️⃣ Stage 2</span>
+              <span class="badge badge-green">2 Stage 2</span>
             {% endif %}
             {% if p.guide_name %}<span class="badge badge-blue">Guide: {{ p.guide_name }}</span>{% endif %}
             <span style="font-size:12px;color:#aaa;">{{ p.submitted_at[:16] if p.submitted_at else '' }}</span>
           </div>
 
           <!-- Citation block -->
-          <div style="background:{% if p.stage==1 %}#faf5ff{% else %}#f0fdf4{% endif %};border:1.5px solid {% if p.stage==1 %}#ddd6fe{% else %}#bbf7d0{% endif %};border-radius:10px;padding:14px 16px;margin-bottom:12px;">
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:{% if p.stage==1 %}#7c3aed{% else %}#059669{% endif %};margin-bottom:6px;">📋 Publication Citation</div>
-            <div style="font-size:14px;font-weight:700;color:{% if p.stage==1 %}#1e1b4b{% else %}#052e16{% endif %};line-height:1.9;font-style:italic;letter-spacing:0.01em;">
+          <div style="background:{% if p.stage==1 %}#fff5f7{% else %}#fff5f7{% endif %};border:1.5px solid {% if p.stage==1 %}#f4c2ca{% else %}#f4c2ca{% endif %};border-radius:10px;padding:14px 16px;margin-bottom:12px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:{% if p.stage==1 %}#c8102e{% else %}#c8102e{% endif %};margin-bottom:6px;"> Publication Citation</div>
+            <div style="font-size:14px;font-weight:700;color:{% if p.stage==1 %}#8f1128{% else %}#8f1128{% endif %};line-height:1.9;font-style:italic;letter-spacing:0.01em;">
               PUBLISHED PAPER ENTITLED "{{ p.paper_title|upper }}" IN {{ p.journal_name|upper }} VOLUME {{ p.volume_no }}, ISSUE {{ p.issue }}, {{ p.timeline|upper }}, E ISSN {{ p.e_issn }}
             </div>
           </div>
@@ -125,8 +125,8 @@
             <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#aaa;margin-bottom:6px;">Group Members</div>
             <div style="display:flex;flex-wrap:wrap;gap:6px;">
               {% for m in members %}
-              <div style="display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;background:#f5f5f3;font-size:13px;">
-                <span style="font-family:'DM Mono',monospace;color:#7c3aed;font-size:11px;font-weight:700;">{{ m.prn }}</span>
+              <div style="display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;background:#fdf3f5;font-size:13px;">
+                <span style="font-family:'DM Mono',monospace;color:#c8102e;font-size:11px;font-weight:700;">{{ m.prn }}</span>
                 <span style="color:#555;font-weight:500;">{{ m.name }}</span>
               </div>
               {% endfor %}
@@ -143,7 +143,7 @@
           {% if p.pdf_filename %}
           <a href="/view-paper/{{ p.pdf_filename }}" target="_blank"
              class="btn btn-sm {% if p.stage==1 %}btn-coord{% else %}btn-student{% endif %}">
-            📄 View PDF
+             View PDF
           </a>
           {% else %}
           <span class="badge badge-gray">No PDF uploaded</span>
@@ -152,24 +152,24 @@
       </div>
 
       <!-- Detail fields -->
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid #f0f0ee;">
-        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid #f9f0f2;">
+        <div style="padding:8px 10px;background:#fff7f8;border-radius:8px;">
           <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Journal / Conf.</div>
           <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.journal_name }}</div>
         </div>
-        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+        <div style="padding:8px 10px;background:#fff7f8;border-radius:8px;">
           <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Volume No</div>
           <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.volume_no }}</div>
         </div>
-        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+        <div style="padding:8px 10px;background:#fff7f8;border-radius:8px;">
           <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Issue</div>
           <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.issue }}</div>
         </div>
-        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+        <div style="padding:8px 10px;background:#fff7f8;border-radius:8px;">
           <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">Timeline</div>
           <div style="font-size:13px;font-weight:700;margin-top:2px;">{{ p.timeline }}</div>
         </div>
-        <div style="padding:8px 10px;background:#f8f8f6;border-radius:8px;">
+        <div style="padding:8px 10px;background:#fff7f8;border-radius:8px;">
           <div style="font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.05em;">E-ISSN</div>
           <div style="font-size:13px;font-weight:700;margin-top:2px;font-family:'DM Mono',monospace;">{{ p.e_issn }}</div>
         </div>
@@ -183,7 +183,7 @@
 <script>
 function filterPapers(stage, btn) {
   document.querySelectorAll('button[onclick^="filterPapers"]').forEach(b => {
-    b.style.background = '#fafaf8'; b.style.color = '#888'; b.style.borderColor = '#eee';
+    b.style.background = '#fff9fa'; b.style.color = '#888'; b.style.borderColor = '#eee';
   });
   btn.style.background = '#111'; btn.style.color = '#fff'; btn.style.borderColor = '#111';
   document.querySelectorAll('.paper-card').forEach(card => {
@@ -192,3 +192,4 @@ function filterPapers(stage, btn) {
 }
 </script>
 {% endblock %}
+
