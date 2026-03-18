@@ -9,6 +9,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import sqlite3, os, csv, io, json
 import openpyxl
+from openpyxl.utils import get_column_letter
+from openpyxl.styles import Alignment, Font, Border, Side
 from functools import wraps
 from datetime import datetime
 
@@ -349,6 +351,124 @@ def upload_students():
         msg += f' {skipped} row(s) skipped (missing data or duplicate PRN/email).'
     flash(msg, 'success')
     return redirect(url_for('coord_students'))
+
+@app.route('/coordinator/export-project-details')
+@login_required('coordinator')
+def export_project_details():
+    conn = get_db()
+
+    # 1. Fetch all groups with their allocated guides
+    groups = conn.execute("""
+        SELECT pg.id, pg.project_title, g.name as guide_name
+        FROM project_group pg
+        LEFT JOIN guide g ON pg.guide_id = g.id
+        ORDER BY pg.id ASC
+    """).fetchall()
+
+    # Create a new workbook and select active sheet
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Project Details"
+
+    # --- 2. SET UNIVERSITY HEADERS (Rows 1-3) ---
+    ws.merge_cells('A1:I1')
+    ws['A1'] = "Sandip University"
+
+    ws.merge_cells('A2:I2')
+    ws['A2'] = "School Of Computer Science and Engineering"
+
+    ws.merge_cells('A3:I3')
+    ws['A3'] = "Project Details Academic Year 2026-27"
+
+    # Style university headers
+    header_font = Font(name='Arial', bold=True, size=14)
+    for row in range(1, 4):
+        cell = ws.cell(row=row, column=1)
+        cell.alignment = Alignment(horizontal='center')
+        cell.font = header_font
+
+    # --- 3. SET TABLE HEADERS (Row 5) ---
+    columns = [
+        "Group No.", "Sr.No.", "Name Of Student", "PRN",
+        "Project Guide Name", "Project Title", "Domain",
+        "Industry Name", "Industry contact person info"
+    ]
+
+    for col_num, column_title in enumerate(columns, 1):
+        cell = ws.cell(row=5, column=col_num)
+        cell.value = column_title
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+        cell.border = Border(left=Side(style='thin'), right=Side(style='thin'),
+                             top=Side(style='thin'), bottom=Side(style='thin'))
+
+    # --- 4. FILL DATA AND MERGE CELLS ---
+    current_row = 6
+    for grp in groups:
+        # Get members for this specific group
+        members = conn.execute("""
+            SELECT name, prn FROM student
+            WHERE id IN (SELECT student_id FROM group_member WHERE group_id=?)
+        """, (grp['id'],)).fetchall()
+
+        if not members:
+            continue
+
+        group_start_row = current_row
+
+        for i, member in enumerate(members):
+            ws.cell(row=current_row, column=2).value = i + 1
+            ws.cell(row=current_row, column=3).value = member['name']
+            ws.cell(row=current_row, column=4).value = member['prn']
+
+            # Apply borders to all columns (1 to 9)
+            for c in range(1, 10):
+                ws.cell(row=current_row, column=c).border = Border(
+                    left=Side(style='thin'), right=Side(style='thin'),
+                    top=Side(style='thin'), bottom=Side(style='thin'))
+            current_row += 1
+
+        # Merge Group-level data (Group ID, Guide, Title) across the member rows
+        end_row = current_row - 1
+
+        group_info = {
+            1: grp['id'],
+            5: grp['guide_name'] or "Not Allocated",
+            6: grp['project_title'] or "TBD"
+        }
+        for col, value in group_info.items():
+            ws.merge_cells(start_row=group_start_row, start_column=col, end_row=end_row, end_column=col)
+            cell = ws.cell(row=group_start_row, column=col)
+            cell.value = value
+            cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+
+    # --- 5. AUTO-RESIZE COLUMNS ---
+    for col in ws.columns:
+        max_length = 0
+        column_letter = get_column_letter(col[0].column)
+
+        for cell in col:
+            try:
+                if hasattr(cell, 'value') and cell.value:
+                    length = len(str(cell.value))
+                    if length > max_length:
+                        max_length = length
+            except Exception:
+                pass
+
+        ws.column_dimensions[column_letter].width = min(max(max_length + 2, 10), 50)
+
+    conn.close()
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return send_file(
+        output,
+        download_name="Project_Details_2026-27.xlsx",
+        as_attachment=True,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
 
 @app.route('/coordinator/students/delete/<int:sid>', methods=['POST'])
 @login_required('coordinator')

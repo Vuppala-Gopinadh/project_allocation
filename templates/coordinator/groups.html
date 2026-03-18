@@ -2,9 +2,15 @@
 {% block title %}Groups — Coordinator{% endblock %}
 {% block content %}
 <div class="page fade-in">
-  <div class="page-header">
-    <h1>All Groups</h1>
-    <p>{{ groups|length }} groups formed by students</p>
+  <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h1>All Groups</h1>
+      <p>{{ groups|length }} groups formed by students</p>
+    </div>
+    <a href="{{ url_for('export_project_details') }}" class="btn btn-outline"
+       style="display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #111;color:#111;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;transition:all 0.2s;">
+      <span style="font-size:18px;">&#128202;</span> Export to University Excel
+    </a>
   </div>
 
   {% if not groups %}
