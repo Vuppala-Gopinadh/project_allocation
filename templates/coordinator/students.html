@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Students — Coordinator{% endblock %}
+{% block content %}
+<div class="page fade-in">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;">
+    <div class="page-header" style="margin-bottom:0;">
+      <h1>Student List</h1>
+      <p>{{ students|length }} students registered</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <a href="/static/sample_students.xlsx" download class="btn btn-outline btn-sm">⬇ Sample CSV</a>
+      <label class="btn btn-primary" style="cursor:pointer;">
+        📤 Upload Excel
+        <form method="POST" action="/coordinator/students/upload" enctype="multipart/form-data" id="uploadForm" style="display:none">
+          <input type="file" name="file" accept=".xlsx,.xls" onchange="document.getElementById('uploadForm').submit()">
+        </form>
+        <input type="file" accept=".xlsx,.xls" onchange="triggerUpload(this)" style="display:none" id="csvFile">
+      </label>
+    </div>
+  </div>
+
+  {% if not students %}
+  <div class="card">
+    <div class="empty">
+      <div class="empty-icon">📋</div>
+      <h3>No Students Uploaded</h3>
+      <p>Upload an Excel file (.xlsx) to add students.</p>
+      <div style="margin-top:20px;padding:16px;background:#f8f8f6;border-radius:10px;text-align:left;display:inline-block;">
+        <div style="font-weight:700;font-size:13px;margin-bottom:8px;">Required CSV Format:</div>
+        <code style="font-family:'DM Mono',monospace;font-size:13px;color:#555;line-height:2;">
+          Row 1 (Header): Name | PRN | Division | Department | Email<br>
+          Row 2+: Arun Kumar | 2021CS001 | A | Computer Science | arun@student.edu
+        </code>
+      </div>
+      <div style="margin-top:16px;">
+        <label class="btn btn-primary" style="cursor:pointer;">
+          📤 Upload Excel Now
+          <input type="file" accept=".xlsx,.xls" onchange="triggerUpload(this)" style="display:none">
+        </label>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="card" style="padding:0;">
+    <div style="padding:14px 20px;border-bottom:1px solid #f0f0ee;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+      <input class="form-control" placeholder="🔍 Search by name, PRN, division..." id="searchInput" oninput="filterTable()" style="max-width:300px;">
+      <div style="display:flex;gap:8px;">
+        <span class="badge badge-purple">{{ students|length }} total</span>
+        <span class="badge badge-green">{{ students|selectattr('in_group','equalto',1)|list|length }} grouped</span>
+        <span class="badge badge-gray">{{ students|selectattr('in_group','equalto',0)|list|length }} ungrouped</span>
+      </div>
+    </div>
+    <div class="table-wrap" style="border:none;border-radius:0;">
+      <table id="studentTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>PRN</th>
+            <th>Division</th>
+            <th>Department</th>
+            <th>Email (Login ID)</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in students %}
+          <tr>
+            <td class="text-muted">{{ loop.index }}</td>
+            <td style="font-weight:600;">{{ s.name }}</td>
+            <td class="mono" style="font-size:13px;">{{ s.prn }}</td>
+            <td>{% if s.division %}<span class="badge badge-blue">Div {{ s.division }}</span>{% else %}—{% endif %}</td>
+            <td>{{ s.department or '—' }}</td>
+            <td class="text-muted" style="font-size:13px;">{{ s.email or '—' }}</td>
+            <td>
+              {% if s.in_group %}
+                <span class="badge badge-green">In Group</span>
+              {% else %}
+                <span class="badge badge-gray">Ungrouped</span>
+              {% endif %}
+            </td>
+            <td>
+              <form method="POST" action="/coordinator/students/delete/{{ s.id }}" onsubmit="return confirm('Remove {{ s.name }}?')">
+                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="card" style="margin-top:16px;background:#f8f8f6;border-style:dashed;">
+    <div style="font-weight:700;margin-bottom:10px;font-size:14px;">📄 Excel Format Guide</div>
+    <div style="font-family:'DM Mono',monospace;font-size:13px;color:#555;line-height:2.2;background:#fff;padding:12px 16px;border-radius:8px;border:1px solid #e8e8e4;">
+      Name,PRN,Division,Department,Email<br>
+      Arun Kumar,2021CE001,A,Computer Science,arun@student.edu<br>
+      Priya Sharma,2021CE002,B,Computer Science,priya@student.edu
+    </div>
+    <div style="display:flex;gap:24px;margin-top:12px;flex-wrap:wrap;">
+      <div style="font-size:13px;color:#666;">🔑 <strong>Login ID:</strong> Student's Email address</div>
+      <div style="font-size:13px;color:#666;">🔒 <strong>Password:</strong> PRN number (exactly as in CSV)</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function triggerUpload(input) {
+  if (!input.files[0]) return;
+  const form = document.getElementById('uploadForm');
+  const fi = form.querySelector('input[type=file]');
+  const dt = new DataTransfer();
+  dt.items.add(input.files[0]);
+  fi.files = dt.files;
+  form.submit();
+}
+function filterTable() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('#studentTable tbody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

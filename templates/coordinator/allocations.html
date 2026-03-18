@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Allocations — Coordinator{% endblock %}
+{% block content %}
+<div class="page fade-in">
+  <div class="page-header">
+    <h1>Guide Allocations</h1>
+    <p>Overview of all guide-to-group assignments</p>
+  </div>
+
+  {% if unallocated %}
+  <div class="alert alert-warning" style="margin-bottom:20px;">
+    ⚠️ {{ unallocated|length }} group(s) have not been assigned a guide yet.
+    <a href="{{ url_for('coord_groups') }}" style="font-weight:700;color:inherit;margin-left:6px;">Allocate Now →</a>
+  </div>
+  {% endif %}
+
+  {% for item in guide_data %}
+  {% set guide = item.guide %}
+  {% set grps = item.groups %}
+  <div class="card" style="margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:{% if grps %}16{% else %}0{% endif %}px;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:48px;height:48px;border-radius:14px;background:#e0f2fe;display:flex;align-items:center;justify-content:center;font-size:24px;">🎓</div>
+        <div>
+          <div style="font-weight:800;font-size:16px;">{{ guide.name }}</div>
+          <div class="text-muted">{{ guide.email }} {% if guide.department %}· {{ guide.department }}{% endif %}</div>
+        </div>
+      </div>
+      <span class="badge badge-blue">{{ grps|length }} group(s) assigned</span>
+    </div>
+    {% if grps %}
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      {% for g in grps %}
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#f8f8f6;border-radius:8px;">
+        <div>
+          <div style="font-weight:600;font-size:14px;">{{ g.project_title or 'No title' }}</div>
+          <div class="text-muted">Lead: {{ g.lead_name or '—' }} &middot; {{ g.member_count }} members</div>
+        </div>
+        <span class="badge badge-green">Active</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-muted" style="font-size:14px;">No groups assigned yet.</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  {% if not guide_data %}
+  <div class="card">
+    <div class="empty">
+      <div class="empty-icon">📊</div>
+      <h3>No Guides Added</h3>
+      <p>Add guides first, then allocate them to student groups.</p>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if unallocated %}
+  <div class="card" style="border-left:4px solid #d97706;">
+    <div style="font-weight:700;margin-bottom:12px;font-size:15px;">⏳ Unallocated Groups</div>
+    {% for g in unallocated %}
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#fff7ed;border-radius:8px;margin-bottom:8px;">
+      <div>
+        <div style="font-weight:600;">{{ g.project_title or 'No title' }}</div>
+        <div class="text-muted">Lead: {{ g.lead_name or '—' }} · {{ g.member_count }} members</div>
+      </div>
+      <a href="{{ url_for('coord_groups') }}" class="btn btn-sm" style="background:#d9780620;color:#d97706;border:none;">Assign Guide</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

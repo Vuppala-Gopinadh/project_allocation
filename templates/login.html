@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — Project Allocation System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f7f7f5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .login-wrap { width: 100%; max-width: 440px; }
+
+  .login-brand {
+    text-align: center;
+    margin-bottom: 36px;
+    animation: fadeUp 0.4s ease;
+  }
+  .login-logo {
+    width: 72px; height: 72px; border-radius: 20px;
+    background: #111; display: flex; align-items: center;
+    justify-content: center; font-size: 36px;
+    margin: 0 auto 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  }
+  .login-brand h1 {
+    font-size: 26px; font-weight: 800; letter-spacing: -0.03em; color: #111;
+  }
+  .login-brand p { color: #888; font-size: 15px; margin-top: 4px; }
+
+  .login-card {
+    background: #fff;
+    border: 1px solid #e8e8e4;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    animation: fadeUp 0.4s ease 0.05s both;
+  }
+
+  /* Portal Toggle */
+  .portal-tabs { display: flex; gap: 6px; margin-bottom: 28px; }
+  .portal-tab {
+    flex: 1; padding: 10px 8px; border-radius: 10px;
+    border: 2px solid #eee; background: #fafaf8;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    transition: all 0.2s; text-align: center; color: #aaa;
+    line-height: 1.3;
+  }
+  .portal-tab:hover { border-color: #ccc; color: #666; }
+  .portal-tab.active-coord { border-color: #7c3aed; background: #ede9fe; color: #7c3aed; }
+  .portal-tab.active-guide { border-color: #0891b2; background: #e0f2fe; color: #0891b2; }
+  .portal-tab.active-student { border-color: #059669; background: #dcfce7; color: #059669; }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .form-label { font-size: 13px; font-weight: 600; color: #555; }
+  .form-control {
+    border: 1.5px solid #e5e5e5; border-radius: 8px; padding: 11px 14px;
+    font-size: 14px; font-family: 'DM Sans', sans-serif;
+    outline: none; transition: border 0.18s; background: #fafafa; width: 100%;
+    color: #111;
+  }
+  .form-control:focus { border-color: #111; background: #fff; }
+
+  .btn-login {
+    width: 100%; padding: 13px; border: none; border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; margin-top: 6px;
+    color: #fff;
+  }
+  .btn-login:hover { transform: translateY(-1px); opacity: 0.92; }
+  .btn-coord { background: #7c3aed; }
+  .btn-guide { background: #0891b2; }
+  .btn-student { background: #059669; }
+
+  .alert-error {
+    background: #fee2e2; color: #dc2626; border: 1px solid #fecaca;
+    padding: 11px 14px; border-radius: 8px; font-size: 14px;
+    font-weight: 500; margin-bottom: 16px;
+  }
+
+  .demo-box {
+    margin-top: 20px; padding: 14px; background: #f8f8f6;
+    border-radius: 10px; font-size: 12px; color: #888; line-height: 1.8;
+  }
+  .demo-box strong { color: #555; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-brand">
+    <div class="login-logo">🏛️</div>
+    <h1>Project Allocator</h1>
+    <p>Final Year Project Management System</p>
+  </div>
+
+  <div class="login-card">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="alert-error">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Portal Selector -->
+    <div class="portal-tabs" id="portalTabs">
+      <button class="portal-tab active-coord" onclick="setPortal('coordinator', this)" type="button">
+        📋<br>Coordinator
+      </button>
+      <button class="portal-tab" onclick="setPortal('guide', this)" type="button">
+        🎓<br>Guide
+      </button>
+      <button class="portal-tab" onclick="setPortal('student', this)" type="button">
+        🎒<br>Student
+      </button>
+    </div>
+
+    <form method="POST" action="/login" id="loginForm">
+      <input type="hidden" name="role" id="roleField" value="coordinator">
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-control" type="email" name="email" placeholder="Enter your email" required autofocus>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-control" type="password" name="password" placeholder="Enter your password" required>
+      </div>
+
+      <button type="submit" class="btn-login btn-coord" id="loginBtn">
+        Sign In as Coordinator
+      </button>
+    </form>
+
+    <div class="demo-box">
+      <strong>Demo Credentials:</strong><br>
+      📋 Coordinator: coordinator@college.edu / coord123<br>
+      🎓 Guide: Add via coordinator panel<br>
+      🎒 Student: Email (login ID) / PRN (password) — after CSV upload
+    </div>
+  </div>
+</div>
+
+<script>
+  const portals = {
+    coordinator: { label: 'Coordinator', cls: 'active-coord', btnCls: 'btn-coord' },
+    guide: { label: 'Guide', cls: 'active-guide', btnCls: 'btn-guide' },
+    student: { label: 'Student', cls: 'active-student', btnCls: 'btn-student' },
+  };
+  function setPortal(role, el) {
+    document.getElementById('roleField').value = role;
+    document.querySelectorAll('.portal-tab').forEach(t => t.className = 'portal-tab');
+    el.classList.add(portals[role].cls);
+    const btn = document.getElementById('loginBtn');
+    btn.className = 'btn-login ' + portals[role].btnCls;
+    btn.textContent = 'Sign In as ' + portals[role].label;
+  }
+</script>
+</body>
+</html>
